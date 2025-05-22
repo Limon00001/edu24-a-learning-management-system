@@ -1,0 +1,21 @@
+/**
+ * Author: Monayem Hossain Limon
+ * GitHub: https://github.com/Limon00001
+ * Date: 22 May, 2025
+ * @copyright 2025 monayem_hossain_limon
+ */
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String?
+  email   String   @unique
+}
