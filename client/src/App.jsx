@@ -1,12 +1,22 @@
+/**
+ * Author: Monayem Hossain Limon
+ * GitHub: https://github.com/Limon00001
+ * Date: 22 May, 2025
+ * @copyright 2025 monayem_hossain_limon
+ */
+
+// External Imports
+import { Route, Routes } from 'react-router-dom';
+
 // Internal Imports
-import { Button } from '@/components/ui/button';
+import AuthPage from './pages/auth';
 
 // App Component
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button className={'bg-amber-900'}>Click me</Button>
-    </div>
+    <Routes>
+      <Route path="/auth" element={<AuthPage />} />
+    </Routes>
   );
 }
 

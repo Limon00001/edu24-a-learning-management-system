@@ -1,8 +1,22 @@
+/*
+  Author: Monayem Hossain Limon
+  GitHub: https://github.com/Limon00001
+  Date: 22 May, 2025
+  @copyright 2025 monayem_hossain_limon
+*/
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+/* Tailwind CSS */
 @import 'tailwindcss';
-@import "tw-animate-css";
+
+/* Tailwind Animate CSS */
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
+/* Theme */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -39,6 +53,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --font-outfit: 'Outfit', sans-serif;
 }
 
 :root {
@@ -112,9 +127,9 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply font-outfit scroll-smooth;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply m-0 p-0 box-border h-screen;
   }
 }

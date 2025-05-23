@@ -8,15 +8,21 @@
 // External Imports
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 
 // Internal Imports
 import App from './App.jsx';
+import { AuthProvider } from './context/auth-context/index.jsx';
 
 // CSS File
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 );
