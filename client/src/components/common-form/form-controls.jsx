@@ -21,6 +21,7 @@ import { Textarea } from '../ui/textarea';
 const FormControls = ({ formControls = [], formData, setFormData }) => {
   const renderComponentByType = (getControlItem) => {
     let element = null;
+    const currentControlItemValue = formData[getControlItem.name] || '';
 
     switch (getControlItem.componentType) {
       case 'input':
@@ -31,12 +32,27 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
             type={getControlItem.type}
             placeholder={getControlItem.placeholder}
             className="focus-visible:border-1 focus-visible:ring-0"
+            value={currentControlItemValue}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControlItem.name]: event.target.value,
+              })
+            }
           />
         );
         break;
       case 'select':
         element = (
-          <Select>
+          <Select
+            onValueChange={(value) =>
+              setFormData({
+                ...formData,
+                [getControlItem.name]: value,
+              })
+            }
+            value={currentControlItemValue}
+          >
             <SelectTrigger>
               <SelectValue placeholder={getControlItem.placeholder} />
             </SelectTrigger>
@@ -58,6 +74,13 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
             id={getControlItem.name}
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
+            value={currentControlItemValue}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControlItem.name]: event.target.value,
+              })
+            }
           />
         );
         break;
@@ -70,6 +93,13 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
             type={getControlItem.type}
             placeholder={getControlItem.placeholder}
             className="focus-visible:border-1 focus-visible:ring-0"
+            value={currentControlItemValue}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControlItem.name]: event.target.value,
+              })
+            }
           />
         );
         break;

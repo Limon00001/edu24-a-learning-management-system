@@ -7,7 +7,7 @@
 
 // External Imports
 import { GraduationCap } from 'lucide-react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Internal Imports
@@ -21,13 +21,39 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { signInFormControls, signUpFormControls } from '@/config';
+import { AuthContext } from '@/context/auth-context';
 
 // Component
 const AuthPage = () => {
   const [activeTab, setActiveTab] = useState('signin');
 
+  const {
+    signInFormData,
+    setSignInFormData,
+    signUpFormData,
+    setSignUpFormData,
+  } = useContext(AuthContext);
+
   const handleTabChange = (value) => {
     setActiveTab(value);
+  };
+
+  const checkIfSignInFormIsValid = () => {
+    if (!signInFormData) return false;
+
+    return Boolean(
+      signInFormData.userEmail?.trim() && signInFormData.password?.trim(),
+    );
+  };
+
+  const checkIfSignUpFormIsValid = () => {
+    if (!signUpFormData) return false;
+
+    return Boolean(
+      signUpFormData.userName?.trim() &&
+        signUpFormData.userEmail?.trim() &&
+        signUpFormData.password?.trim(),
+    );
   };
 
   return (
@@ -67,6 +93,9 @@ const AuthPage = () => {
                 <CommonForm
                   buttonText="Sign In"
                   formControls={signInFormControls}
+                  formData={signInFormData}
+                  setFormData={setSignInFormData}
+                  isButtonDisabled={!checkIfSignInFormIsValid()}
                 />
               </CardContent>
             </Card>
@@ -85,6 +114,9 @@ const AuthPage = () => {
                 <CommonForm
                   buttonText="Sign Up"
                   formControls={signUpFormControls}
+                  formData={signUpFormData}
+                  setFormData={setSignUpFormData}
+                  isButtonDisabled={!checkIfSignUpFormIsValid()}
                 />
               </CardContent>
             </Card>

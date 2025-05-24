@@ -6,13 +6,26 @@
  */
 
 // External Imports
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
+
+// Internal Imports
+import { signInFormControls, signUpFormControls } from '@/config';
 
 // Create Auth Context
 const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
+  const [signInFormData, setSignInFormData] = useState(signInFormControls);
+  const [signUpFormData, setSignUpFormData] = useState(signUpFormControls);
+
+  const value = {
+    signInFormData,
+    setSignInFormData,
+    signUpFormData,
+    setSignUpFormData,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Export
