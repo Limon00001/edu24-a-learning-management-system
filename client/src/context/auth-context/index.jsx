@@ -10,7 +10,7 @@ import { createContext, useState } from 'react';
 
 // Internal Imports
 import { signInFormControls, signUpFormControls } from '@/config';
-import { registerService } from '@/services';
+import { loginService, registerService } from '@/services';
 
 // Create Auth Context
 const AuthContext = createContext(null);
@@ -21,8 +21,12 @@ const AuthProvider = ({ children }) => {
 
   const handleRegisterUser = async (event) => {
     event.preventDefault();
-    const data = await registerService(signUpFormData);
-    console.log(data);
+    const DATA = await registerService(signUpFormData);
+  };
+
+  const handleLoginUser = async (event) => {
+    event.preventDefault();
+    const DATA = await loginService(signInFormData);
   };
 
   const value = {
@@ -31,6 +35,7 @@ const AuthProvider = ({ children }) => {
     signUpFormData,
     setSignUpFormData,
     handleRegisterUser,
+    handleLoginUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

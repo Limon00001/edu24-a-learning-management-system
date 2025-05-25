@@ -5,14 +5,27 @@
  * @copyright 2025 monayem_hossain_limon
  */
 
+// Internal imports
 import axiosInstance from '@/api/axiosInstance';
 
+// Services
 const registerService = async (formData) => {
-  const { data } = await axiosInstance.post('/auth/register', {
-    ...formData,
-  });
+  const { data } = await axiosInstance.post('/auth/register', formData);
 
   return data;
 };
 
-export { registerService };
+const loginService = async (formData) => {
+  const { data } = await axiosInstance.post('/auth/login', formData);
+
+  return data;
+};
+
+const checkAuth = async () => {
+  const { data } = await axiosInstance.get('/auth/check-auth');
+
+  return data;
+};
+
+// Exports
+export { checkAuth, loginService, registerService };
