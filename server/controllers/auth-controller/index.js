@@ -86,7 +86,7 @@ const loginUser = async (req, res, next) => {
     // Generate token
     const accessToken = createToken(
       {
-        id: existingUser._id,
+        id: existingUser.id,
         userName: existingUser.userName,
         userEmail: existingUser.userEmail,
         role: existingUser.role,
@@ -102,7 +102,7 @@ const loginUser = async (req, res, next) => {
       payload: {
         accessToken,
         user: {
-          id: existingUser._id,
+          id: existingUser.id,
           userName: existingUser.userName,
           userEmail: existingUser.userEmail,
           role: existingUser.role,
@@ -119,7 +119,7 @@ const checkAuth = async (req, res, next) => {
 
   try {
     if (!user) {
-      return next(createError(401, 'Unauthorized'));
+      return next(createError(401, 'Authentication Failed'));
     }
 
     // Send response

@@ -15,16 +15,15 @@ import verifyToken from '../helpers/token/verifyToken.js';
 const authenticate = (req, res, next) => {
   // Get token
   const authHeader = req.headers.authorization;
-  const authCookie = req.cookies.token;
 
-  if ((!authHeader && authHeader.startsWith('Bearer')) || !authCookie) {
-    return next(createError(401, 'Unauthorized'));
+  if (!authHeader) {
+    return next(createError(401, 'Authentication failed'));
   }
 
   const token = authHeader.split(' ')[1];
 
   if (!token) {
-    return next(createError(401, 'Unauthorized'));
+    return next(createError(401, 'Authentication failed'));
   }
 
   try {
@@ -32,7 +31,8 @@ const authenticate = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return next(error);
+    console.error('Authentication failed:', error);
+    return next(createError(401, 'Authentication failed'));
   }
 };
 
