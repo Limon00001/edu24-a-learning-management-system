@@ -9,6 +9,7 @@
 import { createContext, useEffect, useState } from 'react';
 
 // Internal Imports
+import { Skeleton } from '@/components/ui/skeleton';
 import { signInFormControls, signUpFormControls } from '@/config';
 import { checkAuthService, loginService, registerService } from '@/services';
 
@@ -16,6 +17,7 @@ import { checkAuthService, loginService, registerService } from '@/services';
 const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
+  const [loading, setLoading] = useState(true);
   const [signInFormData, setSignInFormData] = useState(signInFormControls);
   const [signUpFormData, setSignUpFormData] = useState(signUpFormControls);
   const [auth, setAuth] = useState({
@@ -59,6 +61,7 @@ const AuthProvider = ({ children }) => {
 
     if (!token) {
       setAuth({ authenticate: false, user: null });
+      setLoading(false);
       return;
     }
 
@@ -83,6 +86,8 @@ const AuthProvider = ({ children }) => {
         authenticate: false,
         user: null,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,9 +102,14 @@ const AuthProvider = ({ children }) => {
     setSignUpFormData,
     handleRegisterUser,
     handleLoginUser,
+    auth,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {loading ? <Skeleton /> : children}
+    </AuthContext.Provider>
+  );
 };
 
 // Export
