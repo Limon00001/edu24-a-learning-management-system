@@ -10,12 +10,16 @@ import cors from 'cors';
 import express from 'express';
 
 // Internal Imports
-import prisma from './prisma/index.js';
+import { securityMiddleware } from './middlewares/security/index.js';
+import authRouter from './routes/auth-routes/index.js';
 
 // Express app instance
 const app = express();
 
 // Middleware configuration
+app.use(express.json());
+app.use(express.urlencoded({ extends: true }));
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -23,30 +27,10 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-app.use(express.json());
-app.use(express.urlencoded({ extends: true }));
+app.use(securityMiddleware);
 
-app.post('/', async (req, res) => {
-  const { name, email } = req.body;
-
-  console.log(name, email);
-
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required' });
-  }
-
-  const users = await prisma.user.create({
-    data: {
-      name,
-      email,
-    },
-  });
-  res.status(200).json({
-    success: true,
-    data: users,
-    message: 'Data received successfully',
-  });
-});
+// Routes
+app.use('/auth', authRouter);
 
 // Export
 export default app;
