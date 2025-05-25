@@ -21,11 +21,11 @@ const loginService = async (formData) => {
   return data;
 };
 
-const checkAuth = async () => {
+const checkAuthService = async () => {
   const { data } = await axiosInstance.get('/auth/check-auth');
 
   return data;
 };
 
 // Exports
-export { checkAuth, loginService, registerService };
+export { checkAuthService, loginService, registerService };

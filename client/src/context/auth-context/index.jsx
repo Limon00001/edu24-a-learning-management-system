@@ -6,11 +6,11 @@
  */
 
 // External Imports
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 // Internal Imports
 import { signInFormControls, signUpFormControls } from '@/config';
-import { loginService, registerService } from '@/services';
+import { checkAuthService, loginService, registerService } from '@/services';
 
 // Create Auth Context
 const AuthContext = createContext(null);
@@ -18,6 +18,10 @@ const AuthContext = createContext(null);
 const AuthProvider = ({ children }) => {
   const [signInFormData, setSignInFormData] = useState(signInFormControls);
   const [signUpFormData, setSignUpFormData] = useState(signUpFormControls);
+  const [auth, setAuth] = useState({
+    authenticate: false,
+    user: null,
+  });
 
   const handleRegisterUser = async (event) => {
     event.preventDefault();
@@ -26,8 +30,65 @@ const AuthProvider = ({ children }) => {
 
   const handleLoginUser = async (event) => {
     event.preventDefault();
-    const DATA = await loginService(signInFormData);
+    try {
+      const { data } = await loginService(signInFormData);
+
+      if (data?.success) {
+        localStorage.setItem('accessToken', data?.payload?.accessToken);
+        setAuth({
+          authenticate: true,
+          user: data?.payload?.user,
+        });
+      } else {
+        setAuth({
+          authenticate: false,
+          user: null,
+        });
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setAuth({
+        authenticate: false,
+        user: null,
+      });
+    }
   };
+
+  const checkAuthUser = async () => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      setAuth({ authenticate: false, user: null });
+      return;
+    }
+
+    try {
+      const { data } = await checkAuthService();
+
+      if (data?.success) {
+        setAuth({
+          authenticate: true,
+          user: data?.payload?.user,
+        });
+      } else {
+        setAuth({
+          authenticate: false,
+          user: null,
+        });
+      }
+    } catch (error) {
+      console.error('Authentication failed:', error);
+      localStorage.removeItem('accessToken');
+      setAuth({
+        authenticate: false,
+        user: null,
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkAuthUser();
+  }, []);
 
   const value = {
     signInFormData,

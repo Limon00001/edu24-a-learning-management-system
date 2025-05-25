@@ -25,5 +25,16 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Response Error:', error);
+    if (error.response?.status === 401) {
+      localStorage.removeItem('accessToken');
+    }
+    return Promise.reject(error);
+  },
+);
+
 // Export
 export default axiosInstance;
