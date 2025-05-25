@@ -91,6 +91,13 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const resetCredentials = () => {
+    setAuth({
+      authenticate: false,
+      user: null,
+    });
+  };
+
   useEffect(() => {
     checkAuthUser();
   }, []);
@@ -103,6 +110,7 @@ const AuthProvider = ({ children }) => {
     handleRegisterUser,
     handleLoginUser,
     auth,
+    resetCredentials,
   };
 
   return (

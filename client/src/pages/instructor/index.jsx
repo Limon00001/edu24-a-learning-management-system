@@ -7,17 +7,19 @@
 
 // External Imports
 import { BarChart, Book, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 // Internal Imports
 import InstructorCourses from '@/components/instructor-view/courses';
 import InstructorDashboard from '@/components/instructor-view/dashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { AuthContext } from '@/context/auth-context';
 
 // Component
 const InstructorDashboardPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const { resetCredentials } = useContext(AuthContext);
 
   const menuItems = [
     {
@@ -43,7 +45,10 @@ const InstructorDashboardPage = () => {
     },
   ];
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    resetCredentials();
+    localStorage.clear();
+  };
 
   return (
     <div className="flex h-full min-h-screen bg-gray-100">
