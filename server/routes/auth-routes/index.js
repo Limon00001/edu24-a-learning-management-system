@@ -9,13 +9,20 @@
 import express from 'express';
 
 // Internal imports
-import { registerUser } from '../../controllers/auth-controller/index.js';
+import {
+  checkAuth,
+  loginUser,
+  registerUser,
+} from '../../controllers/auth-controller/index.js';
+import authenticate from '../../middlewares/authMiddleware.js';
 
 // Router instance
 const router = express.Router();
 
 // Routes
 router.post('/register', registerUser);
+router.post('/login', loginUser);
+router.get('/check-auth', authenticate, checkAuth);
 
 // Exports
 export default router;

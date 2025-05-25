@@ -108,5 +108,26 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+const checkAuth = async (req, res, next) => {
+  const user = req.user;
+
+  try {
+    if (!user) {
+      return next(createError(401, 'Unauthorized'));
+    }
+
+    // Send response
+    return successResponse(res, {
+      statusCode: 200,
+      message: 'Login successful',
+      payload: {
+        user,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 // Exports
-export { registerUser };
+export { checkAuth, loginUser, registerUser };
