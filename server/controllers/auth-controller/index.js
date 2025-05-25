@@ -84,7 +84,7 @@ const loginUser = async (req, res, next) => {
     }
 
     // Generate token
-    const token = createToken(
+    const accessToken = createToken(
       {
         id: existingUser._id,
         userName: existingUser.userName,
@@ -100,7 +100,13 @@ const loginUser = async (req, res, next) => {
       statusCode: 200,
       message: 'Login successful',
       payload: {
-        token,
+        accessToken,
+        user: {
+          id: existingUser._id,
+          userName: existingUser.userName,
+          userEmail: existingUser.userEmail,
+          role: existingUser.role,
+        },
       },
     });
   } catch (error) {
