@@ -33,10 +33,32 @@ const AuthPage = () => {
     signUpFormData,
     setSignUpFormData,
     handleRegisterUser,
+    handleLoginUser,
   } = useContext(AuthContext);
 
   const handleTabChange = (value) => {
     setActiveTab(value);
+
+    // Reset forms based on tab switch
+    if (value === 'signin') {
+      setSignUpFormData({});
+    } else {
+      setSignInFormData({});
+    }
+  };
+
+  // Handle sign in submission and reset
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    await handleLoginUser(e);
+    setSignInFormData({});
+  };
+
+  // Handle sign up submission and reset
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    await handleRegisterUser(e);
+    setSignUpFormData({});
   };
 
   const checkIfSignInFormIsValid = () => {
@@ -97,6 +119,7 @@ const AuthPage = () => {
                   formData={signInFormData}
                   setFormData={setSignInFormData}
                   isButtonDisabled={!checkIfSignInFormIsValid()}
+                  handleSubmit={handleSignIn}
                 />
               </CardContent>
             </Card>
@@ -118,7 +141,7 @@ const AuthPage = () => {
                   formData={signUpFormData}
                   setFormData={setSignUpFormData}
                   isButtonDisabled={!checkIfSignUpFormIsValid()}
-                  handleSubmit={handleRegisterUser}
+                  handleSubmit={handleSignUp}
                 />
               </CardContent>
             </Card>
