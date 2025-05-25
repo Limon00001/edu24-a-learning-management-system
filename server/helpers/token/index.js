@@ -5,6 +5,9 @@
  * @copyright 2025 monayem_hossain_limon
  */
 
+// External imports
+import jwt from 'jsonwebtoken';
+
 // Token creation
 const createToken = (payload, secretKey, expiresIn = '20m') => {
   // Validate payload

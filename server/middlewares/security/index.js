@@ -95,8 +95,13 @@ const helmetConfig = {
 
 const securityMiddleware = [
   helmet(helmetConfig),
-  hpp(),
-  mongoSanitize(),
+  hpp({
+    whitelist: [], // Add any fields you want to whitelist for HPP
+  }),
+  mongoSanitize({
+    allowDots: true,
+    replaceWith: '_',
+  }),
   xssSanitizer,
   limiter,
 ];

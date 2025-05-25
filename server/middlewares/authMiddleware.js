@@ -9,7 +9,7 @@
 import createError from 'http-errors';
 
 // Internal imports
-import { verifyToken } from '../helpers/token';
+import verifyToken from '../helpers/token/verifyToken.js';
 
 // Authentication Middleware
 const authenticate = (req, res, next) => {

@@ -10,7 +10,6 @@ import cors from 'cors';
 import express from 'express';
 
 // Internal Imports
-import { securityMiddleware } from './middlewares/security/index.js';
 import authRouter from './routes/auth-routes/index.js';
 
 // Express app instance
@@ -27,7 +26,7 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-app.use(securityMiddleware);
+// app.use(securityMiddleware);
 
 // Routes
 app.use('/auth', authRouter);
