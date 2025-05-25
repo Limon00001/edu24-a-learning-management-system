@@ -10,6 +10,7 @@ import bcrypt from 'bcryptjs';
 import createError from 'http-errors';
 
 // Internal imports
+import createToken from '../../helpers/token/index.js';
 import prisma from '../../prisma/index.js';
 import { successResponse } from '../responseController.js';
 
@@ -18,6 +19,7 @@ const registerUser = async (req, res, next) => {
   const { userName, userEmail, password, role } = req.body;
 
   try {
+    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: {
         userEmail,
@@ -52,6 +54,54 @@ const registerUser = async (req, res, next) => {
       statusCode: 201,
       message: 'User created successfully',
       //   payload: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Login Controller
+const loginUser = async (req, res, next) => {
+  const { userEmail, password } = req.body;
+
+  try {
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        userEmail,
+      },
+    });
+
+    if (!existingUser) {
+      return next(createError(401, 'Invalid credentials'));
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+
+    if (!isMatch) {
+      return next(createError(401, 'Invalid credentials'));
+    }
+
+    // Generate token
+    const token = createToken(
+      {
+        id: existingUser._id,
+        userName: existingUser.userName,
+        userEmail: existingUser.userEmail,
+        role: existingUser.role,
+      },
+      process.env.JWT_SECRET,
+      process.env.JWT_EXPIRES_IN,
+    );
+
+    // Send response
+    return successResponse(res, {
+      statusCode: 200,
+      message: 'Login successful',
+      payload: {
+        token,
+      },
     });
   } catch (error) {
     next(error);
