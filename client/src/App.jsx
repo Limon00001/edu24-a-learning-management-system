@@ -15,6 +15,7 @@ import StudentViewCommonLayout from './components/student-view/common-layout';
 import { AuthContext } from './context/auth-context';
 import AuthPage from './pages/auth';
 import InstructorDashboardPage from './pages/instructor';
+import AddNewCoursePage from './pages/instructor/add-new-course';
 import NotFoundPage from './pages/not-found';
 import StudentHomePage from './pages/student/home';
 
@@ -41,6 +42,16 @@ function App() {
             authenticated={auth?.authenticate}
             user={auth?.user}
             element={<InstructorDashboardPage />}
+          />
+        }
+      />
+      <Route
+        path="/instructor/create-new-course"
+        element={
+          <RouteGuard
+            authenticated={auth?.authenticate}
+            user={auth?.user}
+            element={<AddNewCoursePage />}
           />
         }
       />
