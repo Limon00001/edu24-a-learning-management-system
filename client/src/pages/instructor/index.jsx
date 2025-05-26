@@ -59,6 +59,7 @@ const InstructorDashboardPage = () => {
             {menuItems.map((menuItem) => (
               <Button
                 key={menuItem.id}
+                variant={activeTab === menuItem.value ? 'default' : 'ghost'}
                 className="w-full justify-start mb-2 cursor-pointer"
                 onClick={
                   menuItem.value === 'logout'
@@ -78,7 +79,7 @@ const InstructorDashboardPage = () => {
           <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             {menuItems.map((menuItem) => (
-              <TabsContent value={menuItem.value}>
+              <TabsContent value={menuItem.value} key={menuItem.id}>
                 {menuItem.component !== null ? menuItem.component : null}
               </TabsContent>
             ))}
