@@ -11,6 +11,7 @@ import express from 'express';
 
 // Internal Imports
 import authRouter from './routes/auth-routes/index.js';
+import mediaRouter from './routes/instructor-routes/media-routes.js';
 
 // Express app instance
 const app = express();
@@ -30,6 +31,7 @@ app.use(
 
 // Routes
 app.use('/auth', authRouter);
+app.use('/media', mediaRouter);
 
 // Export
 export default app;
