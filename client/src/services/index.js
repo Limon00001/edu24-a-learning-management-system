@@ -27,5 +27,18 @@ const checkAuthService = async () => {
   return data;
 };
 
+const mediaUploadService = async (formData, onProgressCallback) => {
+  const { data } = await axiosInstance.post('/media/upload', formData, {
+    onUploadProgress: (progressEvent) => {
+      const percentage = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total,
+      );
+      onProgressCallback(percentage);
+    },
+  });
+
+  return data;
+};
+
 // Exports
-export { checkAuthService, loginService, registerService };
+export { checkAuthService, loginService, mediaUploadService, registerService };
