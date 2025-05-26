@@ -53,13 +53,20 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
             }
             value={currentControlItemValue}
           >
-            <SelectTrigger>
-              <SelectValue placeholder={getControlItem.placeholder} />
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={getControlItem.placeholder}
+                className="text-muted-foreground"
+              />
             </SelectTrigger>
             <SelectContent>
               {getControlItem.options && getControlItem.options.length > 0
                 ? getControlItem.options.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
+                    <SelectItem
+                      key={option.id}
+                      value={option.id}
+                      className="cursor-pointer hover:bg-accent"
+                    >
                       {option.label}
                     </SelectItem>
                   ))
@@ -81,6 +88,7 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
                 [getControlItem.name]: event.target.value,
               })
             }
+            className="focus-visible:border-1 focus-visible:ring-0"
           />
         );
         break;
