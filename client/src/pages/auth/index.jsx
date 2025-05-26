@@ -59,6 +59,7 @@ const AuthPage = () => {
     e.preventDefault();
     await handleRegisterUser(e);
     setSignUpFormData({});
+    setActiveTab('signin');
   };
 
   const checkIfSignInFormIsValid = () => {
