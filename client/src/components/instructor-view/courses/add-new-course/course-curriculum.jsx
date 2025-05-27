@@ -92,13 +92,28 @@ const CourseCurriculum = () => {
     }
   };
 
+  const isCourseCurriculumFormDataValid = () => {
+    return courseCurriculumFormData.every((item) => {
+      return (
+        item &&
+        typeof item === 'object' &&
+        item?.title.trim() !== '' &&
+        item?.videoUrl.trim() !== ''
+      );
+    });
+  };
+
   return (
     <Card className={'border-none'}>
       <CardHeader>
         <CardTitle>Create Course Curriculum</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button onClick={handleNewLecture} className="cursor-pointer">
+        <Button
+          onClick={handleNewLecture}
+          disabled={!isCourseCurriculumFormDataValid() || mediaUploadProgress}
+          className="cursor-pointer"
+        >
           Add Lecture
         </Button>
         {mediaUploadProgress ? (
