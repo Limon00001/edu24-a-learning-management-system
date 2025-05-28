@@ -52,6 +52,7 @@ const FormControls = ({ formControls = [], formData, setFormData }) => {
               })
             }
             value={currentControlItemValue}
+            className="focus-visible:border-1 focus-visible:ring-0"
           >
             <SelectTrigger className="w-full">
               <SelectValue

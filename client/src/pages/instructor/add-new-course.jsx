@@ -5,6 +5,9 @@
  * @copyright 2025 monayem_hossain_limon
  */
 
+// External Imports
+import { useContext } from 'react';
+
 // Internal Imports
 import CourseCurriculum from '@/components/instructor-view/courses/add-new-course/course-curriculum';
 import CourseLanding from '@/components/instructor-view/courses/add-new-course/course-landing';
@@ -12,14 +15,46 @@ import CourseSettings from '@/components/instructor-view/courses/add-new-course/
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { InstructorContext } from '@/context/instructor-context';
 
 // New Course Page
 const AddNewCoursePage = () => {
+  const { courseLandingFormData, courseCurriculumFormData } =
+    useContext(InstructorContext);
+
+  const isEmpty = (value) => {
+    if (Array.isArray(value)) return value.length === 0;
+
+    return value === '' || value === null || value === undefined;
+  };
+
+  const validateFormData = () => {
+    for (const key in courseLandingFormData) {
+      if (isEmpty(courseLandingFormData[key])) return false;
+    }
+
+    let hasPreview = false;
+
+    for (const item of courseCurriculumFormData) {
+      if (
+        isEmpty(item.videoUrl) ||
+        isEmpty(item.title) ||
+        isEmpty(item.public_id)
+      )
+        return false;
+
+      if (item.freePreview) hasPreview = true;
+    }
+
+    return hasPreview;
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
         <h1 className="text-3xl font-bold">Add New Course</h1>
         <Button
+          disabled={!validateFormData()}
           className={
             'font-semibold tracking-wider text-sm px-8 uppercase rounded-full'
           }
