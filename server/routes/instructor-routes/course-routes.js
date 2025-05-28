@@ -1,0 +1,29 @@
+/**
+ * Author: Monayem Hossain Limon
+ * GitHub: https://github.com/Limon00001
+ * Date: 28 May, 2025
+ * @copyright 2025 monayem_hossain_limon
+ */
+
+// External imports
+import express from 'express';
+
+// Internal imports
+import {
+  addNewCourse,
+  getAllCourses,
+  getCourseDetailsById,
+  updateCourseById,
+} from '../../controllers/instructor-controllers/course-controller.js';
+
+// Router instance
+const router = express.Router();
+
+// Routes
+router.post('/add', addNewCourse);
+router.get('/get', getAllCourses);
+router.get('/get/details/:id', getCourseDetailsById);
+router.put('/update/:id', updateCourseById);
+
+// Exports
+export default router;

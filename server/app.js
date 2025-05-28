@@ -11,6 +11,7 @@ import express from 'express';
 
 // Internal Imports
 import authRouter from './routes/auth-routes/index.js';
+import instructorCourseRouter from './routes/instructor-routes/course-routes.js';
 import mediaRouter from './routes/instructor-routes/media-routes.js';
 
 // Express app instance
@@ -32,6 +33,7 @@ app.use(
 // Routes
 app.use('/auth', authRouter);
 app.use('/media', mediaRouter);
+app.use('/instructor/course', instructorCourseRouter);
 
 // Export
 export default app;

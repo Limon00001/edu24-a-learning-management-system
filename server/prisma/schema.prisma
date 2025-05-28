@@ -21,3 +21,50 @@ model User {
   password String
   role String @default("user")
 }
+
+model Lecture {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  videoUrl    String
+  public_id   String
+  freePreview Boolean
+  course      Course   @relation(fields: [courseId], references: [id])
+  courseId    String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Student {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId    String   @db.ObjectId
+  studentName  String
+  studentEmail String
+  course       Course   @relation(fields: [courseId], references: [id])
+  courseId     String   @db.ObjectId
+  enrolledAt   DateTime @default(now())
+}
+
+model Course {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  instructorId    String   @db.ObjectId
+  instructorName  String
+  date           DateTime  @default(now())   
+  title          String
+  category       String
+  level          String
+  primaryLanguage String
+  subTitle       String
+  description    String
+  image          String
+  welcomeMessage String?
+  pricing        Float
+  objectives     String
+  students       Student[]
+  curriculum     Lecture[]
+  isPublished Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category])
+  @@index([instructorId])
+}
