@@ -18,7 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import VideoPlayer from '@/components/video-player';
 import { courseCurriculumInitialFormData } from '@/config';
 import { InstructorContext } from '@/context/instructor-context';
-import { mediaUploadService } from '@/services';
+import { mediaDeleteService, mediaUploadService } from '@/services';
 
 // Component
 const CourseCurriculum = () => {
@@ -103,6 +103,30 @@ const CourseCurriculum = () => {
     });
   };
 
+  const handleReplaceVideo = async (currentIndex) => {
+    let copyCourseCurriculumFormData = [...courseCurriculumFormData];
+    const getCurrentVideoPublicId =
+      copyCourseCurriculumFormData[currentIndex]?.public_id;
+
+    try {
+      const { data } = await mediaDeleteService(getCurrentVideoPublicId);
+
+      if (!data?.success) {
+        throw new Error('Failed to replace video');
+      }
+
+      copyCourseCurriculumFormData[currentIndex] = {
+        ...copyCourseCurriculumFormData[currentIndex],
+        videoUrl: '',
+        public_id: '',
+      };
+
+      setCourseCurriculumFormData(copyCourseCurriculumFormData);
+    } catch (error) {
+      console.error('Error replacing video:', error);
+    }
+  };
+
   return (
     <Card className={'border-none'}>
       <CardHeader>
@@ -159,8 +183,13 @@ const CourseCurriculum = () => {
                       width="450px"
                       height="200px"
                     />
-                    <Button>Replace Video</Button>
-                    <Button className="bg-red-500">Delete Video</Button>
+                    <Button
+                      onClick={() => handleReplaceVideo(index)}
+                      className={'cursor-pointer'}
+                    >
+                      Replace Video
+                    </Button>
+                    <Button className="bg-red-800">Delete Video</Button>
                   </div>
                 ) : (
                   <Input

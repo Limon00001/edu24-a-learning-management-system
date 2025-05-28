@@ -40,5 +40,17 @@ const mediaUploadService = async (formData, onProgressCallback) => {
   return data;
 };
 
+const mediaDeleteService = async (id) => {
+  const { data } = await axiosInstance.delete(`/media/delete/${id}`);
+
+  return data;
+};
+
 // Exports
-export { checkAuthService, loginService, mediaUploadService, registerService };
+export {
+  checkAuthService,
+  loginService,
+  mediaDeleteService,
+  mediaUploadService,
+  registerService,
+};
