@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Edit, Trash } from 'lucide-react';
 
-const InstructorCourses = () => {
+const InstructorCourses = ({ listOfCourses }) => {
   const navigate = useNavigate();
 
   return (
@@ -47,21 +47,35 @@ const InstructorCourses = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">
-                  React Js Full Course 2025
-                </TableCell>
-                <TableCell>100</TableCell>
-                <TableCell>$250.00</TableCell>
-                <TableCell className="text-right pr-0 flex justify-end">
-                  <Button variant={'ghost'} className="px-2 cursor-pointer">
-                    <Edit className="w-6 h-6" />
-                  </Button>
-                  <Button variant={'ghost'} className={'cursor-pointer'}>
-                    <Trash className="w-6 h-6 text-red-700" />
-                  </Button>
-                </TableCell>
-              </TableRow>
+              {listOfCourses && listOfCourses.length > 0 ? (
+                listOfCourses.map((course) => (
+                  <TableRow key={course?.id}>
+                    <TableCell className="font-medium">
+                      {course?.title}
+                    </TableCell>
+                    <TableCell>
+                      {Array.isArray(course?.students)
+                        ? course.students.length
+                        : 0}
+                    </TableCell>
+                    <TableCell>${course?.pricing}</TableCell>
+                    <TableCell className="text-right pr-0 flex justify-end">
+                      <Button variant={'ghost'} className="px-2 cursor-pointer">
+                        <Edit className="w-6 h-6" />
+                      </Button>
+                      <Button variant={'ghost'} className={'cursor-pointer'}>
+                        <Trash className="w-6 h-6 text-red-700" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-6">
+                    No courses available
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
