@@ -28,6 +28,7 @@ const InstructorProvider = ({ children }) => {
   const [mediaUploadProgress, setMediaUploadProgress] = useState(false);
   const [mediaUploadProgressPercentage, setMediaUploadProgressPercentage] =
     useState(0);
+  const [instructorCoursesList, setInstructorCoursesList] = useState([]);
 
   const value = {
     courseLandingFormData,
@@ -38,6 +39,8 @@ const InstructorProvider = ({ children }) => {
     setMediaUploadProgress,
     mediaUploadProgressPercentage,
     setMediaUploadProgressPercentage,
+    instructorCoursesList,
+    setInstructorCoursesList,
   };
 
   return (

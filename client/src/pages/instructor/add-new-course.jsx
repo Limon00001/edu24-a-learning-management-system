@@ -69,12 +69,13 @@ const AddNewCoursePage = () => {
       date: new Date().toISOString(),
       ...courseLandingFormData,
       pricing: parseFloat(courseLandingFormData.pricing),
-      curriculum: courseCurriculumFormData.map((item) => ({
-        title: item.title,
-        videoUrl: item.videoUrl,
-        public_id: item.public_id,
-        freePreview: item.freePreview,
-      })),
+      curriculum: courseCurriculumFormData,
+      // curriculum: courseCurriculumFormData.map((item) => ({
+      //   title: item.title,
+      //   videoUrl: item.videoUrl,
+      //   public_id: item.public_id,
+      //   freePreview: item.freePreview,
+      // })),
       isPublished: true,
     };
 
@@ -98,7 +99,7 @@ const AddNewCoursePage = () => {
         <Button
           disabled={!validateFormData()}
           className={
-            'font-semibold tracking-wider text-sm px-8 uppercase rounded-full'
+            'font-semibold tracking-wider text-sm px-8 uppercase rounded-full cursor-pointer'
           }
           onClick={handleCreateCourse}
         >
