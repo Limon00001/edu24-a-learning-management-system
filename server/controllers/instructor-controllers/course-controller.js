@@ -106,11 +106,33 @@ const updateCourseById = async (req, res, next) => {
   const courseData = req.body;
 
   try {
+    const { curriculum, ...mainCourseData } = courseData;
+
+    // First delete existing curriculum
+    await prisma.lecture.deleteMany({
+      where: {
+        courseId: id,
+      },
+    });
+
+    // Update course with new curriculum
     const updatedCourse = await prisma.course.update({
       where: {
         id,
       },
-      data: courseData,
+      data: {
+        ...mainCourseData,
+        curriculum: {
+          create: curriculum.map(
+            ({ id, courseId, createdAt, updatedAt, ...lectureData }) =>
+              lectureData,
+          ),
+        },
+      },
+      include: {
+        curriculum: true,
+        students: true,
+      },
     });
 
     if (!updatedCourse) {
@@ -126,7 +148,7 @@ const updateCourseById = async (req, res, next) => {
       },
     });
   } catch (error) {
-    return next(createError(500, 'Error updating course'));
+    return next(createError(500, `Error updating course ${error}`));
   }
 };
 
