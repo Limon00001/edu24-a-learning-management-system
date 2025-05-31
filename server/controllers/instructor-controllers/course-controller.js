@@ -16,20 +16,35 @@ import { successResponse } from '../responseController.js';
 const addNewCourse = async (req, res, next) => {
   const courseData = req.body;
   try {
+    const { curriculum, ...mainCourseData } = courseData;
+
     const newlyCreatedCourse = await prisma.course.create({
-      data: courseData,
+      data: {
+        ...mainCourseData,
+        curriculum: {
+          create: curriculum,
+        },
+        students: {
+          create: [],
+        },
+      },
+      include: {
+        curriculum: true,
+        students: true,
+      },
     });
 
     // Response
     successResponse(res, {
-      statusCode: 200,
+      statusCode: 201,
       message: 'Course added successfully',
       payload: {
         data: newlyCreatedCourse,
       },
     });
   } catch (error) {
-    return next(createError(500, 'Error adding new course'));
+    console.log(error);
+    return next(createError(500, `Error adding new course ${error.message}`));
   }
 };
 
