@@ -6,8 +6,8 @@
  */
 
 // External Imports
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Internal Imports
 import CourseCurriculum from '@/components/instructor-view/courses/add-new-course/course-curriculum';
@@ -22,7 +22,10 @@ import {
 } from '@/config';
 import { AuthContext } from '@/context/auth-context';
 import { InstructorContext } from '@/context/instructor-context';
-import { addNewCourseService } from '@/services';
+import {
+  addNewCourseService,
+  fetchInstructorCourseDetailsService,
+} from '@/services';
 
 // New Course Page
 const AddNewCoursePage = () => {
@@ -31,9 +34,49 @@ const AddNewCoursePage = () => {
     courseCurriculumFormData,
     setCourseLandingFormData,
     setCourseCurriculumFormData,
+    currentEditedCourseId,
+    setCurrentEditedCourseId,
   } = useContext(InstructorContext);
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
+  const params = useParams();
+
+  useEffect(() => {
+    if (currentEditedCourseId !== null) {
+      const fetchCurrentCourseDetails = async () => {
+        try {
+          const { data } = await fetchInstructorCourseDetailsService(
+            currentEditedCourseId,
+          );
+
+          if (data?.success) {
+            const setCourseFormData = Object.keys(
+              courseLandingInitialFormData,
+            ).reduce((acc, key) => {
+              acc[key] =
+                data?.payload?.data[key] || courseLandingInitialFormData[key];
+
+              return acc;
+            }, {});
+            setCourseLandingFormData(setCourseFormData);
+            setCourseCurriculumFormData(data?.payload?.data?.curriculum);
+          }
+        } catch (error) {
+          console.error(`Error fetching course details ${error}`);
+        }
+      };
+
+      fetchCurrentCourseDetails();
+    }
+  }, [
+    currentEditedCourseId,
+    setCourseCurriculumFormData,
+    setCourseLandingFormData,
+  ]);
+
+  useEffect(() => {
+    if (params?.courseId) setCurrentEditedCourseId(params?.courseId);
+  }, [params?.courseId, setCurrentEditedCourseId]);
 
   const isEmpty = (value) => {
     if (Array.isArray(value)) return value.length === 0;

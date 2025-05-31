@@ -6,6 +6,7 @@
  */
 
 // External Imports
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Internal Imports
@@ -19,17 +20,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  courseCurriculumInitialFormData,
+  courseLandingInitialFormData,
+} from '@/config';
+import { InstructorContext } from '@/context/instructor-context';
 import { Edit, Trash } from 'lucide-react';
 
 const InstructorCourses = ({ listOfCourses }) => {
   const navigate = useNavigate();
+  const {
+    setCurrentEditedCourseId,
+    setCourseLandingFormData,
+    setCourseCurriculumFormData,
+  } = useContext(InstructorContext);
 
   return (
     <Card className="border-none">
       <CardHeader className={'flex flex-row justify-between items-center'}>
         <CardTitle className={'text-3xl font-extrabold'}>Card Title</CardTitle>
         <Button
-          onClick={() => navigate('/instructor/create-new-course')}
+          onClick={() => {
+            setCurrentEditedCourseId(null);
+            setCourseCurriculumFormData(courseCurriculumInitialFormData);
+            setCourseLandingFormData(courseLandingInitialFormData);
+            navigate('/instructor/create-new-course');
+          }}
           className={'p-6 cursor-pointer'}
         >
           Create New Course
@@ -60,7 +76,13 @@ const InstructorCourses = ({ listOfCourses }) => {
                     </TableCell>
                     <TableCell>${course?.pricing}</TableCell>
                     <TableCell className="text-right pr-0 flex justify-end">
-                      <Button variant={'ghost'} className="px-2 cursor-pointer">
+                      <Button
+                        onClick={() =>
+                          navigate(`/instructor/edit-course/${course?.id}`)
+                        }
+                        variant={'ghost'}
+                        className="px-2 cursor-pointer"
+                      >
                         <Edit className="w-6 h-6" />
                       </Button>
                       <Button variant={'ghost'} className={'cursor-pointer'}>
