@@ -9,7 +9,7 @@
 import createHttpError from 'http-errors';
 
 // Internal Imports
-import { errorResponse } from '../controllers/responseController';
+import { errorResponse } from '../controllers/responseController.js';
 
 // Client Error
 const clientError = (req, res, next) => {
@@ -26,3 +26,4 @@ const serverError = (err, req, res, next) => {
 
 // exports
 export { clientError, serverError };
+

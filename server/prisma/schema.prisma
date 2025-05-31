@@ -53,7 +53,7 @@ model Course {
   category       String
   level          String
   primaryLanguage String
-  subTitle       String
+  subtitle       String
   description    String
   image          String
   welcomeMessage String?

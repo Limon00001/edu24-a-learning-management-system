@@ -53,7 +53,7 @@ const registerUser = async (req, res, next) => {
     return successResponse(res, {
       statusCode: 201,
       message: 'User created successfully',
-      //   payload: user,
+        payload: user,
     });
   } catch (error) {
     next(error);
@@ -137,3 +137,4 @@ const checkAuth = async (req, res, next) => {
 
 // Exports
 export { checkAuth, loginUser, registerUser };
+

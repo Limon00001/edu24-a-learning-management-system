@@ -10,6 +10,7 @@ import cors from 'cors';
 import express from 'express';
 
 // Internal Imports
+import { clientError, serverError } from './middlewares/errorsMiddleware.js';
 import authRouter from './routes/auth-routes/index.js';
 import instructorCourseRouter from './routes/instructor-routes/course-routes.js';
 import mediaRouter from './routes/instructor-routes/media-routes.js';
@@ -34,6 +35,12 @@ app.use(
 app.use('/auth', authRouter);
 app.use('/media', mediaRouter);
 app.use('/instructor/course', instructorCourseRouter);
+
+// Client Error Handler
+app.use(clientError)
+
+// Server Error Handler
+app.use(serverError)
 
 // Export
 export default app;
