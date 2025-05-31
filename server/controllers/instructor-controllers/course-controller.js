@@ -50,7 +50,12 @@ const addNewCourse = async (req, res, next) => {
 
 const getAllCourses = async (req, res, next) => {
   try {
-    const allCourses = await prisma.course.findMany();
+    const allCourses = await prisma.course.findMany({
+      include: {
+        students: true,
+        curriculum: true,
+      },
+    });
 
     // Response
     successResponse(res, {
@@ -72,6 +77,10 @@ const getCourseDetailsById = async (req, res, next) => {
     const courseDetails = await prisma.course.findUnique({
       where: {
         id,
+      },
+      include: {
+        students: true,
+        curriculum: true,
       },
     });
 
