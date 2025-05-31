@@ -9,6 +9,7 @@
 import createError from 'http-errors';
 
 // Internal imports
+import { uploadMediaToCloudinary } from '../../helpers/cloudinary.js';
 import prisma from '../../prisma/index.js';
 import { successResponse } from '../responseController.js';
 
@@ -149,6 +150,27 @@ const updateCourseById = async (req, res, next) => {
     });
   } catch (error) {
     return next(createError(500, `Error updating course ${error}`));
+  }
+};
+
+const bulkUploadedCourse = async (req, res, next) => {
+  try {
+    const uploadPromises = req.files.map(async (file) =>
+      uploadMediaToCloudinary(file.path),
+    );
+    const results = await Promise.all(uploadPromises);
+
+    // Response
+    successResponse(res, {
+      statusCode: 200,
+      message: 'Files uploaded successfully',
+      payload: {
+        data: results,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return next(createError(500, `Error uploading files ${error.message}`));
   }
 };
 
