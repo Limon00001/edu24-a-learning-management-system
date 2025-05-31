@@ -11,6 +11,7 @@ import multer from 'multer';
 
 // Internal Imports
 import {
+  bulkUploadedCourse,
   deleteMediaFromCloudinaryController,
   uploadMediaToCloudinaryController,
 } from '../../controllers/instructor-controllers/media-controllers.js';
@@ -27,6 +28,7 @@ router.post(
   upload.single('file'),
   uploadMediaToCloudinaryController,
 );
+router.post('/bulk-upload', upload.array('files', 10), bulkUploadedCourse);
 router.delete('/delete/:id', deleteMediaFromCloudinaryController);
 
 // Export

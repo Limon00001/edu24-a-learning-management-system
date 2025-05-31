@@ -32,6 +32,27 @@ const uploadMediaToCloudinaryController = async (req, res, next) => {
   }
 };
 
+const bulkUploadedCourse = async (req, res, next) => {
+  try {
+    const uploadPromises = req.files.map(async (file) =>
+      uploadMediaToCloudinary(file.path),
+    );
+    const results = await Promise.all(uploadPromises);
+
+    // Response
+    successResponse(res, {
+      statusCode: 200,
+      message: 'Files uploaded successfully',
+      payload: {
+        data: results,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return next(createError(500, `Error uploading files ${error.message}`));
+  }
+};
+
 const deleteMediaFromCloudinaryController = async (req, res, next) => {
   const { id } = req.params;
 
@@ -53,6 +74,7 @@ const deleteMediaFromCloudinaryController = async (req, res, next) => {
 
 // Export
 export {
+  bulkUploadedCourse,
   deleteMediaFromCloudinaryController,
   uploadMediaToCloudinaryController,
 };
