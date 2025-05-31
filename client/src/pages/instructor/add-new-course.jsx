@@ -25,6 +25,7 @@ import { InstructorContext } from '@/context/instructor-context';
 import {
   addNewCourseService,
   fetchInstructorCourseDetailsService,
+  updateCourseByIdService,
 } from '@/services';
 
 // New Course Page
@@ -123,9 +124,15 @@ const AddNewCoursePage = () => {
     };
 
     try {
-      const { data } = await addNewCourseService(courseFinalFormData);
+      const { data } =
+        currentEditedCourseId !== null
+          ? await updateCourseByIdService(
+              currentEditedCourseId,
+              courseFinalFormData,
+            )
+          : await addNewCourseService(courseFinalFormData);
 
-      if (data?.data?.success) {
+      if (data?.data?.success || data?.success) {
         setCourseLandingFormData(courseLandingInitialFormData);
         setCourseCurriculumFormData(courseCurriculumInitialFormData);
         navigate(-1);
