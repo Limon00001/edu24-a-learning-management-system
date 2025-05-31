@@ -7,6 +7,7 @@
 
 // External Imports
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Internal Imports
 import CourseCurriculum from '@/components/instructor-view/courses/add-new-course/course-curriculum';
@@ -15,12 +16,24 @@ import CourseSettings from '@/components/instructor-view/courses/add-new-course/
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  courseCurriculumInitialFormData,
+  courseLandingInitialFormData,
+} from '@/config';
+import { AuthContext } from '@/context/auth-context';
 import { InstructorContext } from '@/context/instructor-context';
+import { addNewCourseService } from '@/services';
 
 // New Course Page
 const AddNewCoursePage = () => {
-  const { courseLandingFormData, courseCurriculumFormData } =
-    useContext(InstructorContext);
+  const {
+    courseLandingFormData,
+    courseCurriculumFormData,
+    setCourseLandingFormData,
+    setCourseCurriculumFormData,
+  } = useContext(InstructorContext);
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const isEmpty = (value) => {
     if (Array.isArray(value)) return value.length === 0;
@@ -49,6 +62,35 @@ const AddNewCoursePage = () => {
     return hasPreview;
   };
 
+  const handleCreateCourse = async () => {
+    const courseFinalFormData = {
+      instructorId: auth?.user?.id,
+      instructorName: auth?.user?.userName,
+      date: new Date().toISOString(),
+      ...courseLandingFormData,
+      pricing: parseFloat(courseLandingFormData.pricing),
+      curriculum: courseCurriculumFormData.map((item) => ({
+        title: item.title,
+        videoUrl: item.videoUrl,
+        public_id: item.public_id,
+        freePreview: item.freePreview,
+      })),
+      isPublished: true,
+    };
+
+    try {
+      const { data } = await addNewCourseService(courseFinalFormData);
+
+      if (data?.data?.success) {
+        setCourseLandingFormData(courseLandingInitialFormData);
+        setCourseCurriculumFormData(courseCurriculumInitialFormData);
+        navigate(-1);
+      }
+    } catch (error) {
+      console.error('Error creating course:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
@@ -58,6 +100,7 @@ const AddNewCoursePage = () => {
           className={
             'font-semibold tracking-wider text-sm px-8 uppercase rounded-full'
           }
+          onClick={handleCreateCourse}
         >
           Submit
         </Button>

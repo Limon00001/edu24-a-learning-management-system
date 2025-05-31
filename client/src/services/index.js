@@ -46,11 +46,44 @@ const mediaDeleteService = async (id) => {
   return data;
 };
 
+const fetchInstructorCourseListService = async () => {
+  const { data } = await axiosInstance.get(`/instructor/course/get`);
+
+  return data;
+};
+
+const addNewCourseService = async (formData) => {
+  const data = await axiosInstance.post(`/instructor/course/add`, formData);
+
+  return data;
+};
+
+const fetchInstructorCourseDetailsService = async (id) => {
+  const { data } = await axiosInstance.get(
+    `/instructor/course/get/details/${id}`,
+  );
+
+  return data;
+};
+
+const updateCourseByIdService = async (id, formData) => {
+  const { data } = await axiosInstance.put(
+    `/instructor/course/update/${id}`,
+    formData,
+  );
+
+  return data;
+};
+
 // Exports
 export {
+  addNewCourseService,
   checkAuthService,
+  fetchInstructorCourseDetailsService,
+  fetchInstructorCourseListService,
   loginService,
   mediaDeleteService,
   mediaUploadService,
   registerService,
+  updateCourseByIdService,
 };
