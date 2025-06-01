@@ -6,7 +6,8 @@
  */
 
 // External Imports
-import { useContext, useRef } from 'react';
+import { Upload } from 'lucide-react';
+import { useContext, useRef, useState } from 'react';
 
 // Internal Imports
 import MediaProgressBar from '@/components/media-progress-bar';
@@ -19,11 +20,11 @@ import VideoPlayer from '@/components/video-player';
 import { courseCurriculumInitialFormData } from '@/config';
 import { InstructorContext } from '@/context/instructor-context';
 import {
+  deleteLectureService,
   mediaBulkUploadService,
   mediaDeleteService,
   mediaUploadService,
 } from '@/services';
-import { Upload } from 'lucide-react';
 
 // Component
 const CourseCurriculum = () => {
@@ -34,8 +35,10 @@ const CourseCurriculum = () => {
     setMediaUploadProgress,
     mediaUploadProgressPercentage,
     setMediaUploadProgressPercentage,
+    currentEditedCourseId,
   } = useContext(InstructorContext);
   const bulkUploadInputRef = useRef(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleNewLecture = () => {
     setCourseCurriculumFormData([
@@ -186,6 +189,47 @@ const CourseCurriculum = () => {
     }
   };
 
+  const handleDeleteLecture = async (currentIndex) => {
+    if (isDeleting) return;
+
+    try {
+      setIsDeleting(true);
+      const lecture = courseCurriculumFormData[currentIndex];
+
+      if (!lecture) {
+        console.error('No lecture found at index:', currentIndex);
+        return;
+      }
+
+      // For saved lectures
+      if (lecture.id && currentEditedCourseId) {
+        const { data } = await deleteLectureService(
+          currentEditedCourseId,
+          lecture.id,
+        );
+
+        if (data?.success) {
+          // Update curriculum state with new data
+          setCourseCurriculumFormData(data?.payload?.data.curriculum);
+        }
+      }
+      // For unsaved lectures
+      else if (lecture.public_id) {
+        await mediaDeleteService(lecture.public_id);
+
+        const updatedCurriculum = courseCurriculumFormData.filter(
+          (_, index) => index !== currentIndex,
+        );
+        setCourseCurriculumFormData(updatedCurriculum);
+      }
+    } catch (error) {
+      console.error('Error deleting lecture:', error);
+      // Add error notification here if you have one
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Card className={'border-none'}>
       <CardHeader className={'flex justify-between items-center'}>
@@ -269,7 +313,12 @@ const CourseCurriculum = () => {
                     >
                       Replace Video
                     </Button>
-                    <Button className="bg-red-800">Delete Video</Button>
+                    <Button
+                      onClick={() => handleDeleteLecture(index)}
+                      className="bg-red-800 cursor-pointer"
+                    >
+                      Delete Lecture
+                    </Button>
                   </div>
                 ) : (
                   <Input
