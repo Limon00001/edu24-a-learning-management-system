@@ -10,7 +10,7 @@ import createError from 'http-errors';
 
 // Internal Imports
 import prisma from '../../prisma/index.js';
-import { successResponse } from '../responseController';
+import { successResponse } from '../responseController.js';
 
 // Controller
 const getAllStudentViewCourses = async (req, res, next) => {

@@ -12,7 +12,7 @@ import express from 'express';
 import {
   getAllStudentViewCourses,
   getStudentViewCourseDetails,
-} from '../../controllers/student-controllers/course-controller';
+} from '../../controllers/student-controllers/course-controller.js';
 
 // Router Initialization
 const router = express.Router();
