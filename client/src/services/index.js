@@ -88,10 +88,23 @@ const updateCourseByIdService = async (id, formData) => {
   return data;
 };
 
+const deleteLectureService = async (courseId, lectureId) => {
+  try {
+    const { data } = await axiosInstance.delete(
+      `/instructor/course/${courseId}/lecture/${lectureId}`,
+    );
+    return data;
+  } catch (error) {
+    console.error('Delete lecture service error:', error);
+    throw error;
+  }
+};
+
 // Exports
 export {
   addNewCourseService,
   checkAuthService,
+  deleteLectureService,
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
   loginService,
