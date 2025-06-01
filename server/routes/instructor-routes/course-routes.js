@@ -11,6 +11,7 @@ import express from 'express';
 // Internal imports
 import {
   addNewCourse,
+  deleteLectureController,
   getAllCourses,
   getCourseDetailsById,
   updateCourseById,
@@ -24,6 +25,7 @@ router.post('/add', addNewCourse);
 router.get('/get', getAllCourses);
 router.get('/get/details/:id', getCourseDetailsById);
 router.put('/update/:id', updateCourseById);
+router.delete('/:courseId/lecture/:lectureId', deleteLectureController);
 
 // Exports
 export default router;

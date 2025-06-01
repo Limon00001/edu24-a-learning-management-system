@@ -64,7 +64,7 @@ const deleteMediaFromCloudinaryController = async (req, res, next) => {
     // Response
     successResponse(res, {
       statusCode: 200,
-      message: 'File uploaded successfully',
+      message: 'Media deleted successfully',
       payload: {},
     });
   } catch (error) {

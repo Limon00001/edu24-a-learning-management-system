@@ -9,6 +9,7 @@
 import createError from 'http-errors';
 
 // Internal imports
+import { deleteMediaFromCloudinary } from '../../helpers/cloudinary.js';
 import prisma from '../../prisma/index.js';
 import { successResponse } from '../responseController.js';
 
@@ -152,5 +153,64 @@ const updateCourseById = async (req, res, next) => {
   }
 };
 
+const deleteLectureController = async (req, res, next) => {
+  const { courseId, lectureId } = req.params;
+
+  try {
+    // Find the lecture to get public_id
+    const lecture = await prisma.lecture.findFirst({
+      where: {
+        id: lectureId,
+        courseId: courseId,
+      },
+    });
+
+    if (!lecture) {
+      return next(createError(404, 'Lecture not found'));
+    }
+
+    // Delete from Cloudinary
+    const cloudinaryResult = await deleteMediaFromCloudinary(lecture.public_id);
+
+    if (cloudinaryResult?.result !== 'ok') {
+      return next(createError(500, 'Failed to delete media from storage'));
+    }
+
+    // Delete from database
+    await prisma.lecture.delete({
+      where: {
+        id: lectureId,
+      },
+    });
+
+    // Get updated course data
+    const updatedCourse = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        curriculum: true,
+        // students: true,
+      },
+    });
+
+    // Send success response with updated data
+    successResponse(res, {
+      statusCode: 200,
+      message: 'Lecture deleted successfully',
+      payload: {
+        data: updatedCourse,
+      },
+    });
+  } catch (error) {
+    console.error('Delete lecture error:', error);
+    return next(createError(500, 'Error deleting lecture'));
+  }
+};
+
 // Export
-export { addNewCourse, getAllCourses, getCourseDetailsById, updateCourseById };
+export {
+  addNewCourse,
+  deleteLectureController,
+  getAllCourses,
+  getCourseDetailsById,
+  updateCourseById,
+};
