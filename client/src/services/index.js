@@ -40,6 +40,19 @@ const mediaUploadService = async (formData, onProgressCallback) => {
   return data;
 };
 
+const mediaBulkUploadService = async (formData, onProgressCallback) => {
+  const { data } = await axiosInstance.post('/media/bulk-upload', formData, {
+    onUploadProgress: (progressEvent) => {
+      const percentage = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total,
+      );
+      onProgressCallback(percentage);
+    },
+  });
+
+  return data;
+};
+
 const mediaDeleteService = async (id) => {
   const { data } = await axiosInstance.delete(`/media/delete/${id}`);
 
@@ -82,6 +95,7 @@ export {
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
   loginService,
+  mediaBulkUploadService,
   mediaDeleteService,
   mediaUploadService,
   registerService,
