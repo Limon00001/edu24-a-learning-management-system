@@ -28,7 +28,11 @@ const uploadMediaToCloudinary = async (filePath) => {
 
 const deleteMediaFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'video',
+    });
+
+    return result;
   } catch (error) {
     throw new Error(`Failed deleting file from clodinary ${error}`);
   }
