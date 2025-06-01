@@ -35,7 +35,7 @@ const StudentViewCommonHeader = () => {
         <div className="flex items-center space-x-1">
           <Button
             variant={'ghost'}
-            className="text-[14px] md:text-[16px] font-medium cursor-pointer"
+            className="text-[14px] md:text-[16px] text-gray-600 font-medium cursor-pointer"
           >
             Explore Courses
           </Button>

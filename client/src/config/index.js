@@ -199,6 +199,7 @@ const filterOptions = {
 
 // Export
 export {
+  courseCategories,
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
   courseLandingPageFormControls,
