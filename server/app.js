@@ -14,6 +14,7 @@ import { clientError, serverError } from './middlewares/errorsMiddleware.js';
 import authRouter from './routes/auth-routes/index.js';
 import instructorCourseRouter from './routes/instructor-routes/course-routes.js';
 import mediaRouter from './routes/instructor-routes/media-routes.js';
+import studentCourseRouter from './routes/student-routes/course-routes.js';
 
 // Express app instance
 const app = express();
@@ -35,12 +36,13 @@ app.use(
 app.use('/auth', authRouter);
 app.use('/media', mediaRouter);
 app.use('/instructor/course', instructorCourseRouter);
+app.use('/student/course', studentCourseRouter);
 
 // Client Error Handler
-app.use(clientError)
+app.use(clientError);
 
 // Server Error Handler
-app.use(serverError)
+app.use(serverError);
 
 // Export
 export default app;
