@@ -7,12 +7,13 @@
 
 // External Imports
 import { Outlet } from 'react-router-dom';
+import StudentViewCommonHeader from './header';
 
 // Common Layout Component
 const StudentViewCommonLayout = () => {
   return (
     <div>
-      StudentViewCommonLayout
+      <StudentViewCommonHeader />
       <Outlet />
     </div>
   );
