@@ -11,9 +11,9 @@ import { createContext, useState } from 'react';
 const StudentContext = createContext(null);
 
 const StudentProvider = ({ children }) => {
-  const [studentCoursesLists, setStudentCoursesLists] = useState([]);
+  const [studentViewCoursesLists, setStudentViewCoursesLists] = useState([]);
 
-  const value = { studentCoursesLists, setStudentCoursesLists };
+  const value = { studentViewCoursesLists, setStudentViewCoursesLists };
 
   return (
     <StudentContext.Provider value={value}>{children}</StudentContext.Provider>
