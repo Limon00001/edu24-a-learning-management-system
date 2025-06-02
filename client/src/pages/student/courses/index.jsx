@@ -8,6 +8,7 @@
 // External Imports
 import { ArrowUpDownIcon } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // Internal Imports
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const StudentViewCoursesPage = () => {
   const [filters, setFilters] = useState({});
   const { studentViewCoursesLists, setStudentViewCoursesLists } =
     useContext(StudentContext);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const fetchAllStudentViewCourses = async () => {
@@ -41,6 +43,24 @@ const StudentViewCoursesPage = () => {
 
     fetchAllStudentViewCourses();
   }, [setStudentViewCoursesLists]);
+
+  useEffect(() => {
+    const buildQueryStringForFilters = createSearchParamsHelper(filters);
+    setSearchParams(new URLSearchParams(buildQueryStringForFilters));
+  }, [filters, setSearchParams]);
+
+  const createSearchParamsHelper = (filterParams) => {
+    const queryParams = [];
+
+    for (const [key, value] of Object.entries(filterParams)) {
+      if (Array.isArray(value) && value.length > 0) {
+        const paramValue = value.join(',');
+        queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+      }
+    }
+
+    return queryParams.join('&');
+  };
 
   const handleFilterOnChange = (getSectionId, getCurrentOption) => {
     let copyFilters = { ...filters };
