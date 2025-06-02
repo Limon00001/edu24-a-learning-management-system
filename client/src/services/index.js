@@ -100,6 +100,20 @@ const deleteLectureService = async (courseId, lectureId) => {
   }
 };
 
+const fetchStudentViewCourseListService = async () => {
+  const { data } = await axiosInstance.get(`/student/course/get`);
+
+  return data;
+};
+
+const fetchStudentViewCourseDetailsService = async (courseId) => {
+  const { data } = await axiosInstance.get(
+    `/student/course/get/details/${courseId}`,
+  );
+
+  return data;
+};
+
 // Exports
 export {
   addNewCourseService,
@@ -107,6 +121,8 @@ export {
   deleteLectureService,
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
+  fetchStudentViewCourseDetailsService,
+  fetchStudentViewCourseListService,
   loginService,
   mediaBulkUploadService,
   mediaDeleteService,
