@@ -12,8 +12,14 @@ const StudentContext = createContext(null);
 
 const StudentProvider = ({ children }) => {
   const [studentViewCoursesLists, setStudentViewCoursesLists] = useState([]);
+  const [loadingState, setLoadingState] = useState(false);
 
-  const value = { studentViewCoursesLists, setStudentViewCoursesLists };
+  const value = {
+    studentViewCoursesLists,
+    setStudentViewCoursesLists,
+    loadingState,
+    setLoadingState,
+  };
 
   return (
     <StudentContext.Provider value={value}>{children}</StudentContext.Provider>

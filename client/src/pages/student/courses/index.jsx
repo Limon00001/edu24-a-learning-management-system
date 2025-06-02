@@ -11,7 +11,6 @@ import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 // Internal Imports
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -22,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { filterOptions, sortOptions } from '@/config';
 import { StudentContext } from '@/context/student-context';
 import { fetchStudentViewCourseListService } from '@/services';
@@ -30,19 +30,35 @@ import { fetchStudentViewCourseListService } from '@/services';
 const StudentViewCoursesPage = () => {
   const [sort, setSort] = useState('price-lowtohigh');
   const [filters, setFilters] = useState({});
-  const { studentViewCoursesLists, setStudentViewCoursesLists } =
-    useContext(StudentContext);
+  const {
+    studentViewCoursesLists,
+    setStudentViewCoursesLists,
+    loadingState,
+    setLoadingState,
+  } = useContext(StudentContext);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    const fetchAllStudentViewCourses = async () => {
-      const { data } = await fetchStudentViewCourseListService();
+    const fetchAllStudentViewCourses = async (filters, sort) => {
+      try {
+        const query = new URLSearchParams({
+          ...(Object.keys(filters).length > 0 ? filters : {}),
+          sortBy: sort,
+        }).toString();
 
-      if (data?.success) setStudentViewCoursesLists(data?.payload);
+        const { data } = await fetchStudentViewCourseListService(query);
+
+        if (data?.success) {
+          setStudentViewCoursesLists(data?.payload);
+          setLoadingState(false);
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
     };
 
-    fetchAllStudentViewCourses();
-  }, [setStudentViewCoursesLists]);
+    fetchAllStudentViewCourses(filters, sort);
+  }, [setStudentViewCoursesLists, filters, sort, setLoadingState]);
 
   useEffect(() => {
     const buildQueryStringForFilters = createSearchParamsHelper(filters);
@@ -100,7 +116,10 @@ const StudentViewCoursesPage = () => {
                 </h2>
                 <div className="grid gap-2 mt-2">
                   {filterOptions[keyItem].map((option) => (
-                    <Label className="flex items-center gap-3 font-medium">
+                    <Label
+                      key={option.id}
+                      className="flex items-center gap-3 font-medium"
+                    >
                       <Checkbox
                         checked={
                           filters &&
@@ -126,17 +145,11 @@ const StudentViewCoursesPage = () => {
         <main className="flex-1">
           <div className="flex justify-end items-center mb-4 gap-5">
             <DropdownMenu>
-              <DropdownMenuTrigger aschild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={
-                    'flex items-center gap-2 p-4 border-none shadow-sm cursor-pointer transition-colors'
-                  }
-                >
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center gap-2 py-2 px-4 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
                   <ArrowUpDownIcon className="w-4 h-4" />
                   <span className="text-sm">Sort by</span>
-                </Button>
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
@@ -158,7 +171,9 @@ const StudentViewCoursesPage = () => {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="text-sm font-medium">10 results</span>
+            <span className="text-sm font-medium">
+              {studentViewCoursesLists?.length} results
+            </span>
           </div>
           <div className="space-y-4">
             {studentViewCoursesLists && studentViewCoursesLists.length > 0 ? (
@@ -197,6 +212,8 @@ const StudentViewCoursesPage = () => {
                   </CardContent>
                 </Card>
               ))
+            ) : loadingState ? (
+              <Skeleton />
             ) : (
               <h1 className="text-md text-gray-700">No courses found</h1>
             )}

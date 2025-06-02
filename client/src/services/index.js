@@ -100,10 +100,17 @@ const deleteLectureService = async (courseId, lectureId) => {
   }
 };
 
-const fetchStudentViewCourseListService = async () => {
-  const { data } = await axiosInstance.get(`/student/course/get`);
+const fetchStudentViewCourseListService = async (query) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `/student/course/get${query ? `?${query}` : ''}`,
+    );
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    throw error;
+  }
 };
 
 const fetchStudentViewCourseDetailsService = async (courseId) => {
