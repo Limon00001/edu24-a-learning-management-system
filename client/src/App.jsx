@@ -17,6 +17,7 @@ import AuthPage from './pages/auth';
 import InstructorDashboardPage from './pages/instructor';
 import AddNewCoursePage from './pages/instructor/add-new-course';
 import NotFoundPage from './pages/not-found';
+import StudentViewCoursesPage from './pages/student/courses';
 import StudentHomePage from './pages/student/home';
 
 // App Component
@@ -77,6 +78,7 @@ function App() {
       >
         <Route path="" element={<StudentHomePage />} />
         <Route path="/home" element={<StudentHomePage />} />
+        <Route path="/courses" element={<StudentViewCoursesPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

@@ -8,7 +8,7 @@
 // External Imports
 import { GraduationCap, TvMinimalPlay } from 'lucide-react';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Internal Imports
 import { AuthContext } from '@/context/auth-context';
@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 
 // Component
 const StudentViewCommonHeader = () => {
+  const navigate = useNavigate();
   const { resetCredentials } = useContext(AuthContext);
 
   const handleLogout = () => {
@@ -34,6 +35,7 @@ const StudentViewCommonHeader = () => {
         </Link>
         <div className="flex items-center space-x-1">
           <Button
+            onClick={() => navigate('/courses')}
             variant={'ghost'}
             className="text-[14px] md:text-[16px] text-gray-600 font-medium cursor-pointer"
           >

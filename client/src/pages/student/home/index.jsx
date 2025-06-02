@@ -7,6 +7,7 @@
 
 // External Imports
 import { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Internal Imports
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import banner from '/banner_2.png';
 
 // Component
 const StudentHomePage = () => {
+  const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const { studentViewCoursesLists, setStudentViewCoursesLists } =
     useContext(StudentContext);
@@ -48,7 +50,10 @@ const StudentHomePage = () => {
             <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold cursor-pointer transition">
               Resume Learning
             </button>
-            <button className="border-2 border-primary text-primary hover:bg-primary/5 px-6 py-3 rounded-lg font-semibold cursor-pointer transition">
+            <button
+              onClick={() => navigate('/courses')}
+              className="border-2 border-primary text-primary hover:bg-primary/5 px-6 py-3 rounded-lg font-semibold cursor-pointer transition"
+            >
               Browse Courses
             </button>
           </div>
