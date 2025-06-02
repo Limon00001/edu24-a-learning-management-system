@@ -27,7 +27,8 @@ import { fetchStudentViewCourseListService } from '@/services';
 
 // Component
 const StudentViewCoursesPage = () => {
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState('price-lowtohigh');
+  const [filters, setFilters] = useState({});
   const { studentViewCoursesLists, setStudentViewCoursesLists } =
     useContext(StudentContext);
 
@@ -41,7 +42,30 @@ const StudentViewCoursesPage = () => {
     fetchAllStudentViewCourses();
   }, [setStudentViewCoursesLists]);
 
-  const handleFilterOnChange = (key, value) => {};
+  const handleFilterOnChange = (getSectionId, getCurrentOption) => {
+    let copyFilters = { ...filters };
+    const indexOfCurrentSection =
+      Object.keys(copyFilters).indexOf(getSectionId);
+
+    if (indexOfCurrentSection === -1) {
+      copyFilters = {
+        ...copyFilters,
+        [getSectionId]: [getCurrentOption.id],
+      };
+    } else {
+      const indexOfCurrentOption = copyFilters[getSectionId].indexOf(
+        getCurrentOption.id,
+      );
+
+      if (indexOfCurrentOption === -1) {
+        copyFilters[getSectionId].push(getCurrentOption.id);
+      } else {
+        copyFilters[getSectionId].splice(indexOfCurrentOption, 1);
+      }
+    }
+    setFilters(copyFilters);
+    localStorage.setItem('filters', JSON.stringify(copyFilters));
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -58,9 +82,14 @@ const StudentViewCoursesPage = () => {
                   {filterOptions[keyItem].map((option) => (
                     <Label className="flex items-center gap-3 font-medium">
                       <Checkbox
-                        checked={false}
+                        checked={
+                          filters &&
+                          Object.keys(filters).length > 0 &&
+                          filters[keyItem] &&
+                          filters[keyItem].indexOf(option.id) > -1
+                        }
                         onCheckedChange={() =>
-                          handleFilterOnChange(keyItem, option.id)
+                          handleFilterOnChange(keyItem, option)
                         }
                         className="cursor-pointer"
                       />
