@@ -10,6 +10,7 @@ import {
   BookOpen,
   Calendar,
   CheckCircle,
+  DollarSign,
   GraduationCap,
   Lock,
   Play,
@@ -27,8 +28,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import VideoPlayer from '@/components/video-player';
 import VideoThumbnail from '@/components/video-player/video-thumbnail';
 import { StudentContext } from '@/context/student-context';
-import { fetchStudentViewCourseDetailsService } from '@/services';
-import { DollarSign } from 'lucide-react';
+import {
+  createPaymentSession,
+  fetchStudentViewCourseDetailsService,
+} from '@/services';
 
 const StudentViewCourseDetailsPage = () => {
   const {
@@ -98,6 +101,23 @@ const StudentViewCourseDetailsPage = () => {
         behavior: 'smooth',
         block: 'start',
       });
+    }
+  };
+
+  const handleEnrollNow = async () => {
+    try {
+      const { data } = await createPaymentSession({
+        courseId: studentViewCourseDetails?.id,
+        courseTitle: studentViewCourseDetails?.title,
+        coursePricing: studentViewCourseDetails?.pricing,
+      });
+
+      // Redirect to Stripe Checkout
+      if (data?.success) {
+        window.location.href = data.payload.url;
+      }
+    } catch (error) {
+      console.error('Error creating payment session:', error);
     }
   };
 
@@ -317,7 +337,10 @@ const StudentViewCourseDetailsPage = () => {
                     <p className="text-gray-600">Lifetime Access</p>
                   </div>
 
-                  <Button className="w-full text-lg py-6 font-semibold rounded-xl shadow-lg cursor-pointer transition-all duration-300">
+                  <Button
+                    onClick={handleEnrollNow}
+                    className="w-full text-lg py-6 font-semibold rounded-xl shadow-lg cursor-pointer transition-all duration-300"
+                  >
                     Enroll Now
                   </Button>
 

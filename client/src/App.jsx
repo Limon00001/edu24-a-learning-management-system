@@ -12,6 +12,7 @@ import { Route, Routes } from 'react-router-dom';
 // Internal Imports
 import RouteGuard from './components/route-guardindex';
 import StudentViewCommonLayout from './components/student-view/common-layout';
+import PaymentSuccessPage from './components/student-view/payment-success';
 import { AuthContext } from './context/auth-context';
 import AuthPage from './pages/auth';
 import InstructorDashboardPage from './pages/instructor';
@@ -84,6 +85,7 @@ function App() {
           path="/course/details/:id"
           element={<StudentViewCourseDetailsPage />}
         />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

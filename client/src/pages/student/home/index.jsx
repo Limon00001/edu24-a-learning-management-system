@@ -90,7 +90,10 @@ const StudentHomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {studentViewCoursesLists && studentViewCoursesLists.length > 0 ? (
             studentViewCoursesLists.map((courseItem) => (
-              <div className="rounded-lg overflow-hidden shadow cursor-pointer">
+              <div
+                key={courseItem?.id}
+                className="rounded-lg overflow-hidden shadow cursor-pointer"
+              >
                 <img
                   src={courseItem?.image}
                   alt="courses"
