@@ -16,7 +16,7 @@ import {
   Users,
   Video,
 } from 'lucide-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 // Internal Imports
@@ -38,10 +38,10 @@ const StudentViewCourseDetailsPage = () => {
     loadingState,
     setLoadingState,
   } = useContext(StudentContext);
-
+  const [currentLectureNumber, setCurrentLectureNumber] = useState(1);
   const [currentVideo, setCurrentVideo] = useState(null);
-  const [videoLoading, setVideoLoading] = useState(false);
   const params = useParams();
+  const videoPointerRef = useRef(null);
 
   useEffect(() => {
     const fetchCourseDetails = async (id) => {
@@ -75,10 +75,29 @@ const StudentViewCourseDetailsPage = () => {
     }
   }, [params.id]);
 
+  useEffect(() => {
+    if (studentViewCourseDetails?.curriculum?.length > 0) {
+      setCurrentLectureNumber(1);
+      setCurrentVideo(studentViewCourseDetails.curriculum[0].videoUrl);
+    }
+  }, [studentViewCourseDetails]);
+
   const handleLectureClick = (lecture) => {
     if (lecture.freePreview) {
       setCurrentVideo(lecture.videoUrl);
-      setVideoLoading(true);
+
+      // Update lecture number
+      const currentLectureIndex =
+        studentViewCourseDetails?.curriculum.findIndex(
+          (l) => l.videoUrl === lecture.videoUrl,
+        );
+      setCurrentLectureNumber(currentLectureIndex + 1);
+
+      // Scroll to video player
+      videoPointerRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     }
   };
 
@@ -161,6 +180,18 @@ const StudentViewCourseDetailsPage = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
+            {/* Course Description */}
+            <Card className="p-8 bg-white border-blue-100/50 shadow-lg">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <div className="h-5 w-1 bg-blue-600 rounded-full" />
+                  Course Description
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {studentViewCourseDetails?.description}
+                </p>
+              </div>
+            </Card>
             {/* Course Content */}
             <Card className="p-8 bg-white border-blue-100/50 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
@@ -187,7 +218,7 @@ const StudentViewCourseDetailsPage = () => {
 
             {/* Video Player & Curriculum */}
             <Card className="p-8 bg-white border-blue-100/50 shadow-lg">
-              <div className="mb-8">
+              <div ref={videoPointerRef} className="mb-8">
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-lg">
                   {currentVideo ? (
                     <VideoPlayer
@@ -203,13 +234,14 @@ const StudentViewCourseDetailsPage = () => {
                   ) : (
                     <VideoThumbnail
                       imageUrl={studentViewCourseDetails?.image}
-                      title="Select a lecture to play"
+                      title={
+                        studentViewCourseDetails?.curriculum[0]?.title ||
+                        'Select a lecture to play'
+                      }
+                      lectureNumber={
+                        studentViewCourseDetails?.curriculum[0] ? 1 : null
+                      }
                     />
-                  )}
-                  {videoLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
-                      <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    </div>
                   )}
                 </div>
               </div>
@@ -267,15 +299,6 @@ const StudentViewCourseDetailsPage = () => {
                 </h3>
                 <p className="text-gray-600">
                   {studentViewCourseDetails?.welcomeMessage}
-                </p>
-              </div>
-
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  Course Description
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {studentViewCourseDetails?.description}
                 </p>
               </div>
             </Card>
