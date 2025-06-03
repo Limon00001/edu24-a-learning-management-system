@@ -10,13 +10,7 @@ import { useContext } from 'react';
 
 // Internal Imports
 import FormControls from '@/components/common-form/form-controls';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { courseLandingPageFormControls } from '@/config';
 import { InstructorContext } from '@/context/instructor-context';
 
@@ -29,7 +23,6 @@ const CourseLanding = () => {
     <Card className={'border-none'}>
       <CardHeader>
         <CardTitle>Course Landing Page</CardTitle>
-        <CardDescription>Card Description</CardDescription>
       </CardHeader>
       <CardContent>
         <FormControls

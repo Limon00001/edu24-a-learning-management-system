@@ -149,7 +149,7 @@ const courseLandingPageFormControls = [
   },
   {
     name: 'objectives',
-    label: 'Objectives',
+    label: 'Objectives (comma separated)',
     componentType: 'textarea',
     type: 'text',
     placeholder: 'Enter course objectives',
