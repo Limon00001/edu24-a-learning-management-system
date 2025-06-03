@@ -121,10 +121,25 @@ const fetchStudentViewCourseDetailsService = async (courseId) => {
   return data;
 };
 
+const createPaymentSession = async (courseData) => {
+  const { data } = await axiosInstance.post(
+    '/payment/create-checkout-session',
+    courseData,
+  );
+  return data;
+};
+
+const verifyPaymentService = async (sessionId) => {
+  const { data } = await axiosInstance.get(`/payment/verify/${sessionId}`);
+
+  return data;
+};
+
 // Exports
 export {
   addNewCourseService,
   checkAuthService,
+  createPaymentSession,
   deleteLectureService,
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
@@ -136,4 +151,5 @@ export {
   mediaUploadService,
   registerService,
   updateCourseByIdService,
+  verifyPaymentService,
 };
