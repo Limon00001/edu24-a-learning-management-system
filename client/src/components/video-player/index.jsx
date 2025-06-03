@@ -22,9 +22,16 @@ import {
 import { useCallback, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Slider } from '../ui/slider';
+import VideoThumbnail from './video-thumbnail';
 
 // VideoPlayer Component
-const VideoPlayer = ({ width = '100%', height = '100%', url }) => {
+const VideoPlayer = ({
+  width = '100%',
+  height = '100%',
+  url,
+  poster,
+  title,
+}) => {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
@@ -32,6 +39,7 @@ const VideoPlayer = ({ width = '100%', height = '100%', url }) => {
   const [seeking, setSeeking] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [showThumbnail, setShowThumbnail] = useState(!playing);
 
   const playerRef = useRef(null);
   const playerContainerRef = useRef(null);
@@ -138,6 +146,11 @@ const VideoPlayer = ({ width = '100%', height = '100%', url }) => {
     };
   }, []);
 
+  const handleThumbnailClick = () => {
+    setPlaying(true);
+    setShowThumbnail(false);
+  };
+
   return (
     <div
       ref={playerContainerRef}
@@ -149,113 +162,132 @@ const VideoPlayer = ({ width = '100%', height = '100%', url }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setShowControls(false)}
     >
-      <ReactPlayer
-        ref={playerRef}
-        width="100%"
-        height="100%"
-        url={url}
-        playing={playing}
-        volume={volume}
-        muted={muted}
-        onProgress={handleProgress}
-        className="absolute top-0 left-0"
-      />
-      {showControls && (
+      {showThumbnail ? (
         <div
-          className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t 
-        from-black/90 via-black/50 to-transparent opacity-75 transition-all 
-        duration-300 ease-in-out ${showControls ? 'opacity-100' : 'opacity-0'}`}
+          onClick={handleThumbnailClick}
+          className="cursor-pointer w-full h-full"
         >
-          <Slider
-            value={[played * 100]}
-            max={100}
-            step={0.1}
-            onValueChange={(value) => handleSeekChange([value[0] / 100])}
-            onValueCommit={handleSeekMouseUp}
-            className={'mb-4 w-full'}
+          <VideoThumbnail
+            imageUrl={poster}
+            title={title}
+            duration="Preview Available"
           />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={'ghost'}
-                size={'icon'}
-                onClick={handlePlayAndPause}
-                className={
-                  'cursor-pointer text-white bg-transparent hover:text-white hover:bg-gray-700'
-                }
-              >
-                {playing ? (
-                  <Pause className="w-6 h-6 cursor-pointer" />
-                ) : (
-                  <Play className="w-6 h-6 cursor-pointer" />
-                )}
-              </Button>
-              <Button
-                variant={'ghost'}
-                size={'icon'}
-                onClick={handleRewind}
-                className={
-                  'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
-                }
-              >
-                <RotateCcw className="w-6 h-6 cursor-pointer" />
-              </Button>
-              <Button
-                variant={'ghost'}
-                size={'icon'}
-                onClick={handleForward}
-                className={
-                  'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
-                }
-              >
-                <RotateCw className="w-6 h-6 cursor-pointer" />
-              </Button>
-              <Button
-                variant={'ghost'}
-                size={'icon'}
-                onClick={handleToggleMute}
-                className={
-                  'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
-                }
-              >
-                {muted ? (
-                  <VolumeX className="w-6 h-6 cursor-pointer" />
-                ) : (
-                  <Volume2 className="w-6 h-6 cursor-pointer" />
-                )}
-              </Button>
-              <Slider
-                defaultValue={[volume * 100]}
-                value={[muted ? 0 : volume * 100]}
-                max={100}
-                step={1}
-                onValueChange={handleVolumeChange}
-                className={'ml-2 w-24'}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="text-white text-sm">
-                {formatTime(played * (playerRef?.current?.getDuration() || 0))}
-                {' / '}
-                {formatTime(playerRef?.current?.getDuration() || 0)}
-              </div>
-              <Button
-                variant={'ghost'}
-                size={'icon'}
-                onClick={handleFullScreen}
-                className={
-                  'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
-                }
-              >
-                {isFullScreen ? (
-                  <Minimize className="w-6 h-6 cursor-pointer" />
-                ) : (
-                  <Maximize className="w-6 h-6 cursor-pointer" />
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
+      ) : (
+        <>
+          <ReactPlayer
+            ref={playerRef}
+            width="100%"
+            height="100%"
+            url={url}
+            playing={playing}
+            volume={volume}
+            muted={muted}
+            onProgress={handleProgress}
+            className="absolute top-0 left-0"
+          />
+          {showControls && (
+            <div
+              className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t 
+            from-black/90 via-black/50 to-transparent opacity-75 transition-all 
+            duration-300 ease-in-out ${
+              showControls ? 'opacity-100' : 'opacity-0'
+            }`}
+            >
+              <Slider
+                value={[played * 100]}
+                max={100}
+                step={0.1}
+                onValueChange={(value) => handleSeekChange([value[0] / 100])}
+                onValueCommit={handleSeekMouseUp}
+                className={'mb-4 w-full'}
+              />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant={'ghost'}
+                    size={'icon'}
+                    onClick={handlePlayAndPause}
+                    className={
+                      'cursor-pointer text-white bg-transparent hover:text-white hover:bg-gray-700'
+                    }
+                  >
+                    {playing ? (
+                      <Pause className="w-6 h-6 cursor-pointer" />
+                    ) : (
+                      <Play className="w-6 h-6 cursor-pointer" />
+                    )}
+                  </Button>
+                  <Button
+                    variant={'ghost'}
+                    size={'icon'}
+                    onClick={handleRewind}
+                    className={
+                      'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
+                    }
+                  >
+                    <RotateCcw className="w-6 h-6 cursor-pointer" />
+                  </Button>
+                  <Button
+                    variant={'ghost'}
+                    size={'icon'}
+                    onClick={handleForward}
+                    className={
+                      'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
+                    }
+                  >
+                    <RotateCw className="w-6 h-6 cursor-pointer" />
+                  </Button>
+                  <Button
+                    variant={'ghost'}
+                    size={'icon'}
+                    onClick={handleToggleMute}
+                    className={
+                      'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
+                    }
+                  >
+                    {muted ? (
+                      <VolumeX className="w-6 h-6 cursor-pointer" />
+                    ) : (
+                      <Volume2 className="w-6 h-6 cursor-pointer" />
+                    )}
+                  </Button>
+                  <Slider
+                    defaultValue={[volume * 100]}
+                    value={[muted ? 0 : volume * 100]}
+                    max={100}
+                    step={1}
+                    onValueChange={handleVolumeChange}
+                    className={'ml-2 w-24'}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-white text-sm">
+                    {formatTime(
+                      played * (playerRef?.current?.getDuration() || 0),
+                    )}
+                    {' / '}
+                    {formatTime(playerRef?.current?.getDuration() || 0)}
+                  </div>
+                  <Button
+                    variant={'ghost'}
+                    size={'icon'}
+                    onClick={handleFullScreen}
+                    className={
+                      'cursor-pointer text-white hover:text-white bg-transparent hover:bg-gray-700'
+                    }
+                  >
+                    {isFullScreen ? (
+                      <Minimize className="w-6 h-6 cursor-pointer" />
+                    ) : (
+                      <Maximize className="w-6 h-6 cursor-pointer" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
