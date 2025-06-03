@@ -8,7 +8,7 @@
 // External Imports
 import { ArrowUpDownIcon } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Internal Imports
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
@@ -37,6 +37,7 @@ const StudentViewCoursesPage = () => {
     setLoadingState,
   } = useContext(StudentContext);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllStudentViewCourses = async (filters, sort) => {
@@ -180,6 +181,7 @@ const StudentViewCoursesPage = () => {
               studentViewCoursesLists.map((courseItem) => (
                 <Card
                   key={courseItem.id}
+                  onClick={() => navigate(`/course/details/${courseItem.id}`)}
                   className="p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <CardContent className="flex p-4 gap-4">

@@ -12,6 +12,9 @@ const StudentContext = createContext(null);
 
 const StudentProvider = ({ children }) => {
   const [studentViewCoursesLists, setStudentViewCoursesLists] = useState([]);
+  const [studentViewCourseDetails, setStudentViewCourseDetails] =
+    useState(null);
+  const [currentCourseDetailsId, setCurrentCourseDetailsId] = useState(null);
   const [loadingState, setLoadingState] = useState(false);
 
   const value = {
@@ -19,6 +22,10 @@ const StudentProvider = ({ children }) => {
     setStudentViewCoursesLists,
     loadingState,
     setLoadingState,
+    studentViewCourseDetails,
+    setStudentViewCourseDetails,
+    currentCourseDetailsId,
+    setCurrentCourseDetailsId,
   };
 
   return (

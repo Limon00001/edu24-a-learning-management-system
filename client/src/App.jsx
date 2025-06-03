@@ -17,6 +17,7 @@ import AuthPage from './pages/auth';
 import InstructorDashboardPage from './pages/instructor';
 import AddNewCoursePage from './pages/instructor/add-new-course';
 import NotFoundPage from './pages/not-found';
+import StudentViewCourseDetailsPage from './pages/student/course-details';
 import StudentViewCoursesPage from './pages/student/courses';
 import StudentHomePage from './pages/student/home';
 
@@ -79,6 +80,10 @@ function App() {
         <Route path="" element={<StudentHomePage />} />
         <Route path="/home" element={<StudentHomePage />} />
         <Route path="/courses" element={<StudentViewCoursesPage />} />
+        <Route
+          path="/course/details/:id"
+          element={<StudentViewCourseDetailsPage />}
+        />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
