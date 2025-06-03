@@ -35,13 +35,23 @@ model Lecture {
 }
 
 model Student {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  studentId    String   @db.ObjectId
-  studentName  String
-  studentEmail String
-  course       Course   @relation(fields: [courseId], references: [id])
-  courseId     String   @db.ObjectId
-  enrolledAt   DateTime @default(now())
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId         String
+  studentName       String
+  studentEmail      String
+  courseId          String   @db.ObjectId
+  courseTitle       String
+  coursePricing     Int
+  courseImage       String
+  courseDescription String
+  courseInstructor  String
+  courseInstructorId String
+  courseLevel       String
+  courseLanguage    String
+  paymentStatus     String
+  paymentId         String
+  enrolledAt        DateTime @default(now())
+  course            Course   @relation(fields: [courseId], references: [id])
 }
 
 model Course {
