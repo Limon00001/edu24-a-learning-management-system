@@ -16,6 +16,7 @@ import instructorCourseRouter from './routes/instructor-routes/course-routes.js'
 import mediaRouter from './routes/instructor-routes/media-routes.js';
 import studentCourseRouter from './routes/student-routes/course-routes.js';
 import paymentRouter from './routes/student-routes/payment-routes.js';
+import studentCoursesRouter from './routes/student-routes/student-courses-routes.js';
 
 // Express app instance
 const app = express();
@@ -39,6 +40,7 @@ app.use('/media', mediaRouter);
 app.use('/instructor/course', instructorCourseRouter);
 app.use('/student/course', studentCourseRouter);
 app.use('/payment', paymentRouter);
+app.use('/student/courses-bought', studentCoursesRouter);
 
 // Client Error Handler
 app.use(clientError);

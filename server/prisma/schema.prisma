@@ -49,9 +49,11 @@ model Student {
   courseLevel       String
   courseLanguage    String
   paymentStatus     String
-  paymentId         String
+  paymentId         String   @unique
   enrolledAt        DateTime @default(now())
   course            Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId], name: "uniqueEnrollment")
 }
 
 model Course {
