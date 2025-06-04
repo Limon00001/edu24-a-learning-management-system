@@ -16,6 +16,7 @@ const StudentProvider = ({ children }) => {
     useState(null);
   const [currentCourseDetailsId, setCurrentCourseDetailsId] = useState(null);
   const [loadingState, setLoadingState] = useState(false);
+  const [studentBoughtCoursesList, setStudentBoughtCoursesList] = useState([]);
 
   const value = {
     studentViewCoursesLists,
@@ -26,6 +27,8 @@ const StudentProvider = ({ children }) => {
     setStudentViewCourseDetails,
     currentCourseDetailsId,
     setCurrentCourseDetailsId,
+    studentBoughtCoursesList,
+    setStudentBoughtCoursesList,
   };
 
   return (

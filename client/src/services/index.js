@@ -135,6 +135,14 @@ const verifyPaymentService = async (sessionId) => {
   return data;
 };
 
+const fetchStudentBoughtCoursesService = async (studentId) => {
+  const { data } = await axiosInstance.get(
+    `/student/courses-bought/get/${studentId}`,
+  );
+
+  return data;
+};
+
 // Exports
 export {
   addNewCourseService,
@@ -143,6 +151,7 @@ export {
   deleteLectureService,
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
+  fetchStudentBoughtCoursesService,
   fetchStudentViewCourseDetailsService,
   fetchStudentViewCourseListService,
   loginService,

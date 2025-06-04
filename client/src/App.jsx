@@ -19,8 +19,10 @@ import InstructorDashboardPage from './pages/instructor';
 import AddNewCoursePage from './pages/instructor/add-new-course';
 import NotFoundPage from './pages/not-found';
 import StudentViewCourseDetailsPage from './pages/student/course-details';
+import StudentViewCourseProgressPage from './pages/student/course-progress';
 import StudentViewCoursesPage from './pages/student/courses';
 import StudentHomePage from './pages/student/home';
+import StudentCoursesPage from './pages/student/student-courses';
 
 // App Component
 function App() {
@@ -86,6 +88,11 @@ function App() {
           element={<StudentViewCourseDetailsPage />}
         />
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
+        <Route path="/student-courses" element={<StudentCoursesPage />} />
+        <Route
+          path="/course-progress"
+          element={<StudentViewCourseProgressPage />}
+        />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
