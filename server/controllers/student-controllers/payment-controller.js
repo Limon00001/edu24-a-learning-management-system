@@ -21,67 +21,107 @@ export const verifyPayment = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
 
-    // Check if sessionId is provided
     if (!sessionId) {
       return next(createError(400, 'Session ID is required'));
     }
 
-    // Retrieve the checkout session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // Use a transaction to prevent race conditions
+    const result = await prisma.$transaction(async (tx) => {
+      // Check for existing payment first
+      const existingPayment = await tx.student.findUnique({
+        where: {
+          paymentId: sessionId,
+        },
+      });
 
-    if (session.payment_status === 'paid') {
-      // user details
-      const user = await prisma.user.findUnique({
+      if (existingPayment) {
+        return {
+          statusCode: 200,
+          message: 'Payment already processed',
+          payload: {
+            enrolled: true,
+            enrollment: existingPayment,
+          },
+        };
+      }
+
+      // Retrieve stripe session
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (session.payment_status !== 'paid') {
+        throw new Error('Payment not completed');
+      }
+
+      // Get user details
+      const user = await tx.user.findUnique({
         where: { id: session.metadata.userId },
       });
 
-      // Check if user exists
       if (!user) {
-        return next(createError(404, 'User not found'));
+        throw new Error('User not found');
       }
 
       // Get course details
-      const course = await prisma.course.findUnique({
+      const course = await tx.course.findUnique({
         where: { id: session.metadata.courseId },
       });
 
-      // Check if course exists
       if (!course) {
-        return next(createError(404, 'Course not found'));
+        throw new Error('Course not found');
       }
 
-      // Create enrollment record with all required fields including courseLanguage
-      const enrollment = await prisma.student.create({
-        data: {
-          studentId: session.metadata.userId,
-          studentName: user.userName,
-          studentEmail: user.userEmail,
-          courseId: course.id,
-          courseTitle: course.title,
-          coursePricing: course.pricing,
-          courseImage: course.coverImage || '',
-          courseDescription: course.description,
-          courseInstructor: course.instructorName,
-          courseInstructorId: course.instructorId,
-          courseLevel: course.level,
-          courseLanguage: course.language || 'english',
-          paymentStatus: 'completed',
-          paymentId: session.id,
-        },
-      });
+      try {
+        // Attempt to create enrollment with unique constraints
+        const enrollment = await tx.student.create({
+          data: {
+            studentId: session.metadata.userId,
+            studentName: user.userName,
+            studentEmail: user.userEmail,
+            courseId: course.id,
+            courseTitle: course.title,
+            coursePricing: course.pricing,
+            courseImage: course.image,
+            courseDescription: course.description,
+            courseInstructor: course.instructorName,
+            courseInstructorId: course.instructorId,
+            courseLevel: course.level,
+            courseLanguage: course.primaryLanguage,
+            paymentStatus: 'completed',
+            paymentId: sessionId,
+          },
+        });
 
-      // Respond with success message
-      return successResponse(res, {
-        statusCode: 200,
-        message: 'Payment verified successfully',
-        payload: {
-          enrolled: true,
-          enrollment,
-        },
-      });
-    } else {
-      return next(createError(400, 'Payment not completed'));
-    }
+        return {
+          statusCode: 200,
+          message: 'Payment verified successfully',
+          payload: {
+            enrolled: true,
+            enrollment,
+          },
+        };
+      } catch (error) {
+        if (error.code === 'P2002') {
+          // Handle unique constraint violation
+          const existingEnrollment = await tx.student.findFirst({
+            where: {
+              studentId: session.metadata.userId,
+              courseId: session.metadata.courseId,
+            },
+          });
+          return {
+            statusCode: 200,
+            message: 'Already enrolled in this course',
+            payload: {
+              enrolled: true,
+              enrollment: existingEnrollment,
+            },
+          };
+        }
+        throw error;
+      }
+    });
+
+    return successResponse(res, result);
   } catch (error) {
     console.error('Payment verification error:', error);
     return next(createError(500, error.message));
