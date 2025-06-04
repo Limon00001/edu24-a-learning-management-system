@@ -45,7 +45,10 @@ const StudentViewCommonHeader = () => {
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex gap-4 items-center">
-          <div className="flex items-center gap-3">
+          <div
+            onClick={() => navigate('/student-courses')}
+            className="flex items-center gap-3 cursor-pointer"
+          >
             <span className="font-extrabold md:text-xl text-[14px] uppercase tracking-wider">
               My Courses
             </span>

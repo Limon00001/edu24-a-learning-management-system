@@ -37,7 +37,7 @@ const PaymentSuccessPage = () => {
         if (data?.success) {
           // Payment verified successfully
           setTimeout(() => {
-            navigate('/courses');
+            navigate('/student-courses');
           }, 3000);
         } else {
           setError(data?.message || 'Payment verification failed');
@@ -106,7 +106,7 @@ const PaymentSuccessPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="p-8 max-w-md w-full">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
             <CheckCircle className="w-8 h-8 text-blue-600" />
           </div>
           <h2 className="text-2xl font-semibold text-gray-800">
@@ -117,7 +117,7 @@ const PaymentSuccessPage = () => {
             shortly.
           </p>
           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-green-500 animate-progress" />
+            <div className="h-full bg-blue-500 animate-progress" />
           </div>
         </div>
       </Card>
