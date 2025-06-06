@@ -19,6 +19,12 @@ const addNewCourse = async (req, res, next) => {
   try {
     const { curriculum, ...mainCourseData } = courseData;
 
+    // Extract image data
+    const courseWithImageId = {
+      ...mainCourseData,
+      image_public_id: mainCourseData.public_id,
+    };
+
     const newlyCreatedCourse = await prisma.course.create({
       data: {
         ...mainCourseData,
@@ -108,6 +114,12 @@ const updateCourseById = async (req, res, next) => {
 
   try {
     const { curriculum, ...mainCourseData } = courseData;
+
+    // Extract image data
+    const courseWithImageId = {
+      ...mainCourseData,
+      image_public_id: mainCourseData.public_id,
+    };
 
     // First delete existing curriculum
     await prisma.lecture.deleteMany({
@@ -206,9 +218,108 @@ const deleteLectureController = async (req, res, next) => {
   }
 };
 
+const deleteCourse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const instructorId = req.user.id;
+
+    // Check if course exists and belongs to the instructor
+    const course = await prisma.course.findFirst({
+      where: {
+        id,
+        instructorId,
+      },
+      include: {
+        curriculum: true,
+      },
+    });
+
+    if (!course) {
+      return next(createError(404, 'Course not found or unauthorized'));
+    }
+
+    const mediaToDelete = {
+      courseImage: course.image_public_id,
+      lectureVideos: course.curriculum
+        .filter((lecture) => lecture.public_id)
+        .map((lecture) => lecture.public_id),
+    };
+
+    // First delete all lectures
+    await prisma.$transaction(async (prisma) => {
+      // Delete lectures
+      await prisma.lecture.deleteMany({
+        where: {
+          courseId: id,
+        },
+      });
+
+      // Delete student enrollments
+      await prisma.student.deleteMany({
+        where: {
+          courseId: id,
+        },
+      });
+
+      // Delete the course
+      await prisma.course.delete({
+        where: {
+          id,
+        },
+      });
+    });
+
+    const deleteMediaPromises = [];
+
+    if (mediaToDelete.courseImage) {
+      deleteMediaPromises.push(
+        deleteMediaFromCloudinary(mediaToDelete.courseImage)
+          .then((result) => {
+            console.log('Course image deletion result:', result);
+            return result;
+          })
+          .catch((error) => {
+            console.error('Failed to delete course image:', error);
+            return null;
+          }),
+      );
+    }
+
+    // Add lecture videos deletion
+    mediaToDelete.lectureVideos.forEach((publicId) => {
+      deleteMediaPromises.push(
+        deleteMediaFromCloudinary(publicId).catch((error) => {
+          console.error(`Failed to delete lecture video ${publicId}:`, error);
+          return null;
+        }),
+      );
+    });
+
+    // Wait for all media deletions to complete
+    const results = await Promise.allSettled(deleteMediaPromises);
+
+    // Delete course thumbnail if exists
+    if (course.thumbnail_public_id) {
+      try {
+        await deleteMediaFromCloudinary(course.thumbnail_public_id);
+      } catch (error) {
+        console.error('Failed to delete course thumbnail:', error);
+      }
+    }
+
+    successResponse(res, {
+      statusCode: 200,
+      message: 'Course deleted successfully',
+    });
+  } catch (error) {
+    return next(createError(500, `Error deleting course: ${error.message}`));
+  }
+};
+
 // Export
 export {
   addNewCourse,
+  deleteCourse,
   deleteLectureController,
   getAllCourses,
   getCourseDetailsById,

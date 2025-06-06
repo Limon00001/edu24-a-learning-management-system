@@ -68,6 +68,7 @@ model Course {
   subtitle       String
   description    String
   image          String
+  image_public_id String?
   welcomeMessage String?
   pricing        Float
   objectives     String

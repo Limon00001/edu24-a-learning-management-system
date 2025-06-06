@@ -14,6 +14,7 @@ import { clientError, serverError } from './middlewares/errorsMiddleware.js';
 import authRouter from './routes/auth-routes/index.js';
 import instructorCourseRouter from './routes/instructor-routes/course-routes.js';
 import mediaRouter from './routes/instructor-routes/media-routes.js';
+import courseProgressRouter from './routes/student-routes/course-progress-routes.js';
 import studentCourseRouter from './routes/student-routes/course-routes.js';
 import paymentRouter from './routes/student-routes/payment-routes.js';
 import studentCoursesRouter from './routes/student-routes/student-courses-routes.js';
@@ -41,6 +42,7 @@ app.use('/instructor/course', instructorCourseRouter);
 app.use('/student/course', studentCourseRouter);
 app.use('/payment', paymentRouter);
 app.use('/student/courses-bought', studentCoursesRouter);
+app.use('/student/course-progress', courseProgressRouter);
 
 // Client Error Handler
 app.use(clientError);
