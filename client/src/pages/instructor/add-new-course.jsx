@@ -8,6 +8,7 @@
 // External Imports
 import { useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Internal Imports
 import CourseCurriculum from '@/components/instructor-view/courses/add-new-course/course-curriculum';
@@ -114,12 +115,6 @@ const AddNewCoursePage = () => {
       ...courseLandingFormData,
       pricing: parseFloat(courseLandingFormData.pricing),
       curriculum: courseCurriculumFormData,
-      // curriculum: courseCurriculumFormData.map((item) => ({
-      //   title: item.title,
-      //   videoUrl: item.videoUrl,
-      //   public_id: item.public_id,
-      //   freePreview: item.freePreview,
-      // })),
       isPublished: true,
     };
 
@@ -136,9 +131,19 @@ const AddNewCoursePage = () => {
         setCourseLandingFormData(courseLandingInitialFormData);
         setCourseCurriculumFormData(courseCurriculumInitialFormData);
         navigate(-1);
+        toast.success(
+          currentEditedCourseId !== null
+            ? 'Course updated successfully'
+            : 'Course created successfully',
+        );
       }
     } catch (error) {
       console.error('Error creating course:', error);
+      toast.error(
+        currentEditedCourseId !== null
+          ? 'Failed to update course'
+          : 'Failed to create course',
+      );
     }
   };
 
