@@ -67,23 +67,7 @@ const AuthPage = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    try {
-      const result = await handleRegisterUser(e);
-      if (result?.success) {
-        toast.success('Account created!', {
-          description: 'Please sign in with your new account.',
-        });
-        setActiveTab('signin');
-      } else {
-        toast.error('Sign up failed', {
-          description: 'Please check your information.',
-        });
-      }
-    } catch (error) {
-      toast.error('Sign up failed', {
-        description: 'An error occurred. Please try again.',
-      });
-    }
+    await handleRegisterUser(e);
 
     setSignUpFormData({});
   };

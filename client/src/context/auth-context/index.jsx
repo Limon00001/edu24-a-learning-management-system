@@ -31,21 +31,31 @@ const AuthProvider = ({ children }) => {
     try {
       const { data } = await registerService(signUpFormData);
 
-      if (!data.success && data.error?.includes('already exists')) {
-        toast.error('Registration failed', {
-          description:
-            'An account with this email already exists. Please sign in instead.',
+      if (data?.success) {
+        toast.success('Registration successful', {
+          description: 'Please sign in with your credentials.',
         });
-        return { success: false };
+        return;
       }
 
-      return { success: true };
-    } catch (error) {
+      // Show error message from response
       toast.error('Registration failed', {
         description:
-          error?.response?.data?.error || 'An unexpected error occurred.',
+          data?.data?.error?.message ||
+          'An error occurred during registration.',
       });
-      return { success: false };
+      return;
+    } catch (error) {
+      // Handle axios error response
+      const errorMessage =
+        error?.response?.data?.data?.error?.message ||
+        error?.response?.data?.error?.message ||
+        'An unexpected error occurred.';
+
+      toast.error('Registration failed', {
+        description: errorMessage,
+      });
+      return;
     }
   };
 
