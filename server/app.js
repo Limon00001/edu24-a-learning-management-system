@@ -18,6 +18,7 @@ import courseProgressRouter from './routes/student-routes/course-progress-routes
 import studentCourseRouter from './routes/student-routes/course-routes.js';
 import paymentRouter from './routes/student-routes/payment-routes.js';
 import studentCoursesRouter from './routes/student-routes/student-courses-routes.js';
+import testRouter from './routes/test-routes/index.js';
 
 // Express app instance
 const app = express();
@@ -36,6 +37,7 @@ app.use(
 // app.use(securityMiddleware);
 
 // Routes
+app.use('/', testRouter);
 app.use('/auth', authRouter);
 app.use('/media', mediaRouter);
 app.use('/instructor/course', instructorCourseRouter);
