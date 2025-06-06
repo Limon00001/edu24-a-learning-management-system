@@ -15,10 +15,12 @@ import {
   Lock,
   Play,
   Users,
+  Verified,
   Video,
 } from 'lucide-react';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Internal Imports
 import { Badge } from '@/components/ui/badge';
@@ -27,34 +29,62 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import VideoPlayer from '@/components/video-player';
 import VideoThumbnail from '@/components/video-player/video-thumbnail';
+import { AuthContext } from '@/context/auth-context';
 import { StudentContext } from '@/context/student-context';
 import {
   createPaymentSession,
   fetchStudentViewCourseDetailsService,
 } from '@/services';
 
+// Component
 const StudentViewCourseDetailsPage = () => {
   const {
     studentViewCourseDetails,
     setStudentViewCourseDetails,
-    setCurrentCourseDetailsId,
     loadingState,
     setLoadingState,
+    studentBoughtCoursesList,
   } = useContext(StudentContext);
+  const { auth } = useContext(AuthContext);
   const [currentLectureNumber, setCurrentLectureNumber] = useState(1);
   const [currentVideo, setCurrentVideo] = useState(null);
+  const [isCoursePurchased, setIsCoursePurchased] = useState(null);
   const params = useParams();
   const videoPointerRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCourseDetails = async (id) => {
+    const fetchCourseDetails = async () => {
       try {
         setLoadingState(true);
-        const { data } = await fetchStudentViewCourseDetailsService(id);
+
+        // checking if the student has a completed payment for the course
+        const isEnrolled = studentBoughtCoursesList?.some(
+          (course) =>
+            course.courseId === params.id &&
+            course.paymentStatus === 'completed',
+        );
+
+        // If enrolled, redirect to progress page
+        if (isEnrolled) {
+          navigate(`/course-progress/${params.id}`);
+          return;
+        }
+
+        // Fetch course details
+        const { data } = await fetchStudentViewCourseDetailsService(
+          params.id,
+          auth?.user?.id || '',
+        );
 
         if (data?.success) {
           setStudentViewCourseDetails(data?.payload);
-          setCurrentVideo(data?.payload?.curriculum[0]?.videoUrl);
+          const firstFreeVideo = data?.payload.curriculum.find(
+            (lecture) => lecture.freePreview,
+          )?.videoUrl;
+          // setCurrentVideo(data?.payload?.curriculum[0]?.videoUrl);
+          setCurrentVideo(firstFreeVideo || null);
+          setIsCoursePurchased(data?.payload);
         } else {
           setStudentViewCourseDetails(null);
           setCurrentVideo(null);
@@ -69,16 +99,25 @@ const StudentViewCourseDetailsPage = () => {
     };
 
     if (params.id) {
-      // Reset states when route changes
+      fetchCourseDetails();
+    }
+
+    return () => {
+      // Cleanup on unmount
       setStudentViewCourseDetails(null);
       setCurrentVideo(null);
-      setCurrentCourseDetailsId(params.id);
-      // Fetch new data
-      fetchCourseDetails(params.id);
-    }
-  }, [params.id]);
+    };
+  }, [
+    params.id,
+    auth?.user?.id,
+    studentBoughtCoursesList,
+    setStudentViewCourseDetails,
+    setLoadingState,
+    navigate,
+  ]);
 
   useEffect(() => {
+    // Reset video and lecture number when course details change
     if (studentViewCourseDetails?.curriculum?.length > 0) {
       setCurrentLectureNumber(1);
       setCurrentVideo(studentViewCourseDetails.curriculum[0].videoUrl);
@@ -86,15 +125,9 @@ const StudentViewCourseDetailsPage = () => {
   }, [studentViewCourseDetails]);
 
   const handleLectureClick = (lecture) => {
-    if (lecture.freePreview) {
+    // Check if the lecture is free preview or if the user is enrolled
+    if (lecture.freePreview || studentViewCourseDetails?.isEnrolled) {
       setCurrentVideo(lecture.videoUrl);
-
-      // Update lecture number
-      const currentLectureIndex =
-        studentViewCourseDetails?.curriculum.findIndex(
-          (l) => l.videoUrl === lecture.videoUrl,
-        );
-      setCurrentLectureNumber(currentLectureIndex + 1);
 
       // Scroll to video player
       videoPointerRef.current?.scrollIntoView({
@@ -106,6 +139,9 @@ const StudentViewCourseDetailsPage = () => {
 
   const handleEnrollNow = async () => {
     try {
+      setLoadingState(true);
+
+      // Check if the course is already purchased
       const { data } = await createPaymentSession({
         courseId: studentViewCourseDetails?.id,
         courseTitle: studentViewCourseDetails?.title,
@@ -114,13 +150,20 @@ const StudentViewCourseDetailsPage = () => {
 
       // Redirect to Stripe Checkout
       if (data?.success) {
+        toast.success('Redirecting to payment...', {
+          duration: 2000,
+        });
         window.location.href = data.payload.url;
       }
     } catch (error) {
       console.error('Error creating payment session:', error);
+      toast.error('Payment failed. Please try again later.');
+      setLoadingState(false);
+      return;
     }
   };
 
+  // Render loading state
   if (loadingState) {
     return (
       <div className="container mx-auto p-4 space-y-6 animate-pulse">
@@ -130,6 +173,18 @@ const StudentViewCourseDetailsPage = () => {
           <Skeleton className="h-40 rounded-xl" />
           <Skeleton className="h-40 rounded-xl" />
         </div>
+      </div>
+    );
+  }
+
+  // Render course details if available
+  if (!studentViewCourseDetails) {
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <h1 className="text-2xl font-bold text-gray-800">Course not found</h1>
+        <Button onClick={() => navigate('/courses')} className="mt-4">
+          Back to Courses
+        </Button>
       </div>
     );
   }
@@ -165,10 +220,19 @@ const StudentViewCourseDetailsPage = () => {
               </div>
 
               <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full shadow-sm">
-                <DollarSign className="w-5 h-5 text-green-600" />
-                <span className="font-medium">
-                  ${studentViewCourseDetails?.pricing}
-                </span>
+                {studentViewCourseDetails?.isEnrolled ? (
+                  <>
+                    <Verified className="w-5 h-5 text-green-600" />
+                    <span className="font-medium">Enrolled</span>
+                  </>
+                ) : (
+                  <>
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                    <span className="font-medium">
+                      ${studentViewCourseDetails?.pricing}
+                    </span>
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full shadow-sm">
@@ -325,33 +389,41 @@ const StudentViewCourseDetailsPage = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4 p-8 bg-white border-blue-100/50 shadow-lg overflow-hidden">
-              <div className="relative">
-                <div className="absolute -right-16 -top-16 w-32 h-32 bg-blue-100/20 rounded-full blur-2xl" />
-                <div className="relative z-10 space-y-6">
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-xl border border-blue-100/50">
-                    <h3 className="text-4xl font-bold text-gray-800 mb-2">
-                      ${studentViewCourseDetails?.pricing}
-                    </h3>
-                    <p className="text-gray-600">Lifetime Access</p>
-                  </div>
+          {!studentViewCourseDetails?.isEnrolled && (
+            <div className="lg:col-span-1">
+              <Card className="sticky top-4 p-8 bg-white border-blue-100/50 shadow-lg overflow-hidden">
+                <div className="relative">
+                  <div className="absolute -right-16 -top-16 w-32 h-32 bg-blue-100/20 rounded-full blur-2xl" />
+                  <div className="relative z-10 space-y-6">
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-xl border border-blue-100/50">
+                      <h3 className="text-4xl font-bold text-gray-800 mb-2">
+                        ${studentViewCourseDetails?.pricing}
+                      </h3>
+                      <p className="text-gray-600">Lifetime Access</p>
+                    </div>
 
-                  <Button
-                    onClick={handleEnrollNow}
-                    className="w-full text-lg py-6 font-semibold rounded-xl shadow-lg cursor-pointer transition-all duration-300"
-                  >
-                    Enroll Now
-                  </Button>
+                    <Button
+                      onClick={handleEnrollNow}
+                      className="w-full text-lg py-6 font-semibold rounded-xl shadow-lg cursor-pointer transition-all duration-300"
+                    >
+                      {loadingState ? (
+                        <span className="flex items-center justify-center gap-2">
+                          Enrolling...
+                        </span>
+                      ) : (
+                        'Enroll Now'
+                      )}
+                    </Button>
 
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                    <Calendar className="w-4 h-4" />
-                    <p>30-Day Money-Back Guarantee</p>
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                      <Calendar className="w-4 h-4" />
+                      <p>30-Day Money-Back Guarantee</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </div>
