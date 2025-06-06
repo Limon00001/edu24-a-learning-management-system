@@ -6,7 +6,15 @@
  */
 
 // External Imports
-import { createContext, useState } from 'react';
+import { fetchStudentBoughtCoursesService } from '@/services';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { AuthContext } from '../auth-context';
 
 const StudentContext = createContext(null);
 
@@ -17,6 +25,24 @@ const StudentProvider = ({ children }) => {
   const [currentCourseDetailsId, setCurrentCourseDetailsId] = useState(null);
   const [loadingState, setLoadingState] = useState(false);
   const [studentBoughtCoursesList, setStudentBoughtCoursesList] = useState([]);
+  const { auth } = useContext(AuthContext);
+
+  const refreshEnrollments = useCallback(async (userId) => {
+    try {
+      const { data } = await fetchStudentBoughtCoursesService(userId);
+      if (data?.success) {
+        setStudentBoughtCoursesList(data.payload);
+      }
+    } catch (error) {
+      console.error('Error refreshing enrollments:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (auth?.user?.id) {
+      refreshEnrollments(auth.user.id);
+    }
+  }, [auth?.user?.id, refreshEnrollments]);
 
   const value = {
     studentViewCoursesLists,
