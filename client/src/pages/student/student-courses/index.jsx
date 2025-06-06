@@ -8,6 +8,7 @@
 // External Imports
 import { Watch } from 'lucide-react';
 import { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Internal imports
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const StudentCoursesPage = () => {
     loadingState,
     setLoadingState,
   } = useContext(StudentContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudentBoughtCourses = async () => {
@@ -80,6 +82,7 @@ const StudentCoursesPage = () => {
           studentBoughtCoursesList.map((course) => (
             <Card
               key={course.id}
+              onClick={() => navigate(`/course-progress/${course.courseId}`)}
               className="flex flex-col border-none shadow-md"
             >
               <CardContent className="flex-grow">
@@ -99,10 +102,31 @@ const StudentCoursesPage = () => {
                   </span>
                 </p>
               </CardContent>
-              <CardFooter>
-                <Button className="w-full">
-                  <Watch className="h-4 w-4 mr-2" />
-                  Watch Course
+              <CardFooter className="pt-4 pb-5 px-4">
+                <Button
+                  className="w-full bg-gradient-to-r from-primary/90 to-primary 
+    hover:from-primary hover:to-primary/90 
+    transform transition-all duration-300 
+    hover:scale-[1.02] active:scale-[0.98]
+    shadow-md hover:shadow-lg
+    text-white font-semibold
+    flex items-center justify-center gap-2
+    py-6 cursor-pointer"
+                >
+                  Continue Learning
+                  <svg
+                    className="w-4 h-4 transform transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
                 </Button>
               </CardFooter>
             </Card>
