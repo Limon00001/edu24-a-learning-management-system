@@ -7,6 +7,7 @@
 
 // External Imports
 import { createContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 // Internal Imports
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,7 +28,25 @@ const AuthProvider = ({ children }) => {
 
   const handleRegisterUser = async (event) => {
     event.preventDefault();
-    const DATA = await registerService(signUpFormData);
+    try {
+      const { data } = await registerService(signUpFormData);
+
+      if (!data.success && data.error?.includes('already exists')) {
+        toast.error('Registration failed', {
+          description:
+            'An account with this email already exists. Please sign in instead.',
+        });
+        return { success: false };
+      }
+
+      return { success: true };
+    } catch (error) {
+      toast.error('Registration failed', {
+        description:
+          error?.response?.data?.error || 'An unexpected error occurred.',
+      });
+      return { success: false };
+    }
   };
 
   const handleLoginUser = async (event) => {
