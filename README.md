@@ -13,6 +13,27 @@
 
 This Learning Management System built with React and Node.js that allows instructors to create and manage courses while enabling students to enroll and learn effectively.
 
+## Credentials
+
+### Instructor Access
+```properties
+Email: instructor@edu24.com
+Password: instructor123
+```
+
+> **Note:** Use these credentials to explore instructor features like:
+> - Course creation and management
+> - Curriculum building
+> - Student progress tracking
+> - Revenue monitoring
+> - Analytics dashboard
+
+### Student Access (Optional)
+```properties
+Email: student@edu24.com
+Password: student123
+```
+
 ## Tech Stack
 
 - React 19 for frontend with Vite
