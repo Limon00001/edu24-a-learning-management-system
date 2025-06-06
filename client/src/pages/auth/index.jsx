@@ -82,7 +82,7 @@ const AuthPage = () => {
 
   return (
     <header className="flex flex-col min-h-screen">
-      <nav className="flex items-center px-4 lg:px-6 h-14 border-b">
+      <nav className="flex items-center px-4 lg:px-6 h-14 shadow-sm">
         <Link to={'/'} className="flex items-center justify-center">
           <GraduationCap className="h-8 w-8 mr-4" />
           <span className="text-xl font-extrabold uppercase">Edu&apos;24</span>
