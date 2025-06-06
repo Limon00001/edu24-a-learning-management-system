@@ -24,7 +24,10 @@ const uploadMediaToCloudinaryController = async (req, res, next) => {
       statusCode: 200,
       message: 'File uploaded successfully',
       payload: {
-        data: result,
+        data: {
+          ...result,
+          public_id: result.public_id,
+        },
       },
     });
   } catch (error) {
