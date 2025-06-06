@@ -27,12 +27,37 @@ const uploadMediaToCloudinary = async (filePath) => {
 };
 
 const deleteMediaFromCloudinary = async (publicId) => {
+  if (!publicId) {
+    console.log('No public_id provided for deletion');
+    return null;
+  }
+
   try {
-    const result = await cloudinary.uploader.destroy(publicId, {
-      resource_type: 'video',
+    // Try to delete as video first
+    try {
+      const videoResult = await cloudinary.uploader.destroy(publicId, {
+        resource_type: 'video',
+      });
+      if (videoResult.result === 'ok') {
+        return videoResult;
+      }
+    } catch (err) {
+      if (!err.message.includes('resource_type')) {
+        throw err;
+      }
+      console.log('Not a video, trying as image...');
+    }
+
+    // Then try as image with invalidation
+    const imageResult = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'image',
     });
 
-    return result;
+    if (imageResult.result === 'ok') {
+      console.log('Successfully deleted image:', publicId);
+    }
+
+    return imageResult;
   } catch (error) {
     throw new Error(`Failed deleting file from clodinary ${error}`);
   }
