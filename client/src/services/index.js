@@ -113,12 +113,16 @@ const fetchStudentViewCourseListService = async (query) => {
   }
 };
 
-const fetchStudentViewCourseDetailsService = async (courseId) => {
-  const { data } = await axiosInstance.get(
-    `/student/course/get/details/${courseId}`,
-  );
-
-  return data;
+const fetchStudentViewCourseDetailsService = async (courseId, studentId) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `/student/course/get/details/${courseId}/${studentId || 'guest'}`,
+    );
+    return data;
+  } catch (error) {
+    console.error('Error fetching course details:', error);
+    throw error;
+  }
 };
 
 const createPaymentSession = async (courseData) => {
@@ -143,11 +147,20 @@ const fetchStudentBoughtCoursesService = async (studentId) => {
   return data;
 };
 
+const deleteCourseByInstructorService = async (courseId) => {
+  const { data } = await axiosInstance.delete(
+    `/instructor/course/delete/${courseId}`,
+  );
+
+  return data;
+};
+
 // Exports
 export {
   addNewCourseService,
   checkAuthService,
   createPaymentSession,
+  deleteCourseByInstructorService,
   deleteLectureService,
   fetchInstructorCourseDetailsService,
   fetchInstructorCourseListService,
