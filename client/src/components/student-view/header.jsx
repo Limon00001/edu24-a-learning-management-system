@@ -64,7 +64,7 @@ const StudentViewCommonHeader = () => {
             >
               <GraduationCap className="h-8 w-8 text-primary" />
               <span className="hidden sm:block font-bold text-xl">
-                LMS System
+                Edu<span className="animate-pulse text-green-700">•</span>24
               </span>
             </Link>
           </div>

@@ -53,14 +53,7 @@ const AuthPage = () => {
     e.preventDefault();
 
     try {
-      const result = await handleLoginUser(e);
-      if (result?.success) {
-        toast.success('Welcome back!');
-      } else {
-        toast.error('Sign in failed', {
-          description: 'Please check your credentials.',
-        });
-      }
+      await handleLoginUser(e);
     } catch (error) {
       toast.error('Sign in failed', {
         description: 'An error occurred. Please try again.',
