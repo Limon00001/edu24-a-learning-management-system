@@ -9,12 +9,14 @@
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Internal Imports
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { verifyPaymentService } from '@/services';
 
+// Payment success page
 const PaymentSuccessPage = () => {
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +37,11 @@ const PaymentSuccessPage = () => {
         const { data } = await verifyPaymentService(sessionId);
 
         if (data?.success) {
+          // Show success toast
+          toast.success('Enrollment Successful! 🎉', {
+            duration: 5000,
+          });
+
           // Payment verified successfully
           setTimeout(() => {
             navigate('/student-courses');
