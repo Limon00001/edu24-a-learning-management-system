@@ -6,7 +6,7 @@
  */
 
 // External Imports
-import { ArrowUpDownIcon } from 'lucide-react';
+import { ArrowUpDownIcon, Verified } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { filterOptions, sortOptions } from '@/config';
+import { AuthContext } from '@/context/auth-context';
 import { StudentContext } from '@/context/student-context';
 import { fetchStudentViewCourseListService } from '@/services';
 
@@ -32,12 +33,22 @@ const StudentViewCoursesPage = () => {
   const [filters, setFilters] = useState({});
   const {
     studentViewCoursesLists,
+    studentViewCourseDetails,
     setStudentViewCoursesLists,
     loadingState,
     setLoadingState,
+    studentBoughtCoursesList,
   } = useContext(StudentContext);
+  const { auth } = useContext(AuthContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const isCoursePurchased = (courseId) => {
+    return studentBoughtCoursesList?.some(
+      (course) =>
+        course.courseId === courseId && course.paymentStatus === 'completed',
+    );
+  };
 
   useEffect(() => {
     const fetchAllStudentViewCourses = async (filters, sort) => {
@@ -102,6 +113,19 @@ const StudentViewCoursesPage = () => {
     }
     setFilters(copyFilters);
     localStorage.setItem('filters', JSON.stringify(copyFilters));
+  };
+
+  const handleCourseClick = (courseItem) => {
+    if (!auth?.user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (isCoursePurchased(courseItem.id)) {
+      navigate(`/course-progress/${courseItem.id}`);
+    } else {
+      navigate(`/course/details/${courseItem.id}`);
+    }
   };
 
   return (
@@ -181,7 +205,7 @@ const StudentViewCoursesPage = () => {
               studentViewCoursesLists.map((courseItem) => (
                 <Card
                   key={courseItem.id}
-                  onClick={() => navigate(`/course/details/${courseItem.id}`)}
+                  onClick={() => handleCourseClick(courseItem)}
                   className="p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <CardContent className="flex p-4 gap-4">
@@ -207,9 +231,20 @@ const StudentViewCoursesPage = () => {
                             : 'Lesson'
                         } - ${courseItem?.level} Level`}
                       </p>
-                      <p className="text-lg font-bold">
-                        ${courseItem?.pricing}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        {!isCoursePurchased(courseItem.id) ? (
+                          <p className="text-lg font-bold">
+                            ${courseItem?.pricing}
+                          </p>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Verified className="w-5 h-5 text-green-600" />
+                            <span className="font-medium text-green-600">
+                              Enrolled
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
