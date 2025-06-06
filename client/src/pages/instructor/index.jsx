@@ -8,6 +8,7 @@
 // External Imports
 import { BarChart, Book, LogOut, User } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 // Internal Imports
 import InstructorCourses from '@/components/instructor-view/courses';
@@ -67,8 +68,15 @@ const InstructorDashboardPage = () => {
 
   // Handle logout functionality
   const handleLogout = () => {
-    resetCredentials();
-    localStorage.clear();
+    try {
+      resetCredentials();
+      localStorage.clear();
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error('Logout failed', {
+        description: 'An error occurred while logging out.',
+      });
+    }
   };
 
   return (

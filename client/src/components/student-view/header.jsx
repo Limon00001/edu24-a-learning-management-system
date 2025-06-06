@@ -9,6 +9,7 @@
 import { BookOpen, GraduationCap, LogOut, Menu, User } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Internal imports
 import {
@@ -30,8 +31,15 @@ const StudentViewCommonHeader = () => {
 
   // Handle logout functionality
   const handleLogout = () => {
-    resetCredentials();
-    localStorage.clear();
+    try {
+      resetCredentials();
+      localStorage.clear();
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error('Logout failed', {
+        description: 'An error occurred while logging out.',
+      });
+    }
   };
 
   // Check if the current route is active

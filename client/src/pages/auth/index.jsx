@@ -9,6 +9,7 @@
 import { GraduationCap } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Internal Imports
 import CommonForm from '@/components/common-form';
@@ -50,16 +51,48 @@ const AuthPage = () => {
   // Handle sign in submission and reset
   const handleSignIn = async (e) => {
     e.preventDefault();
-    await handleLoginUser(e);
+
+    try {
+      const result = await handleLoginUser(e);
+      if (result?.success) {
+        toast.success('Welcome back!');
+      } else {
+        toast.error('Sign in failed', {
+          description: 'Please check your credentials.',
+        });
+      }
+    } catch (error) {
+      toast.error('Sign in failed', {
+        description: 'An error occurred. Please try again.',
+      });
+    }
+
     setSignInFormData({});
   };
 
   // Handle sign up submission and reset
   const handleSignUp = async (e) => {
     e.preventDefault();
-    await handleRegisterUser(e);
+
+    try {
+      const result = await handleRegisterUser(e);
+      if (result?.success) {
+        toast.success('Account created!', {
+          description: 'Please sign in with your new account.',
+        });
+        setActiveTab('signin');
+      } else {
+        toast.error('Sign up failed', {
+          description: 'Please check your information.',
+        });
+      }
+    } catch (error) {
+      toast.error('Sign up failed', {
+        description: 'An error occurred. Please try again.',
+      });
+    }
+
     setSignUpFormData({});
-    setActiveTab('signin');
   };
 
   const checkIfSignInFormIsValid = () => {
