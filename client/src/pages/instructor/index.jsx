@@ -6,7 +6,7 @@
  */
 
 // External Imports
-import { BarChart, Book, LogOut } from 'lucide-react';
+import { BarChart, Book, LogOut, User } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
 
 // Internal Imports
@@ -21,7 +21,7 @@ import { fetchInstructorCourseListService } from '@/services';
 // Component
 const InstructorDashboardPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const { resetCredentials } = useContext(AuthContext);
+  const { resetCredentials, auth } = useContext(AuthContext);
   const { instructorCoursesList, setInstructorCoursesList } =
     useContext(InstructorContext);
 
@@ -65,6 +65,7 @@ const InstructorDashboardPage = () => {
     },
   ];
 
+  // Handle logout functionality
   const handleLogout = () => {
     resetCredentials();
     localStorage.clear();
@@ -74,7 +75,20 @@ const InstructorDashboardPage = () => {
     <div className="flex h-full min-h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow-md hidden md:block">
         <div className="p-4">
-          <h2 className="text-2xl font-bold mb-4">Instructor View</h2>
+          <div className="mb-8 text-center">
+            <div className="w-18 h-18 bg-primary/10 rounded-full mx-auto flex items-center justify-center mb-3">
+              <User className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="font-semibold text-gray-900">
+              {auth?.user?.userName}
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">{auth?.user?.email}</p>
+            <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs rounded-full mt-2">
+              Instructor
+            </span>
+          </div>
+          <div className="border-t mb-4"></div>
+
           <nav>
             {menuItems.map((menuItem) => (
               <Button
