@@ -7,7 +7,7 @@
 
 # Learning Management System (LMS) - Edu'24
 
-![LMS](./client/public/student_dashboard.png)
+![LMS](./client/public/lms-thrmbnail.png)
 
 ## Overview
 
@@ -33,6 +33,14 @@ Password: instructor123
 Email: student@edu24.com
 Password: student123
 ```
+
+> **Note:** Use these credentials to explore student features like:
+> - Course browsing
+> - Course enrollment
+> - Course progress tracking
+> - Free preview of selected lectures
+
+![Student Dashboard](./client/public/student_dashboard.png)
 
 ## Tech Stack
 
@@ -68,15 +76,15 @@ Password: student123
 
 ## Instructor Features
 
-![Instructor Dashboard](./client/public/instructor_dashboard.png)
-![Instructor Dashboard](./client/public/instructor_course_creation.png)
-
 - Course creation and management
 - Rich course curriculum builder
 - Video lecture upload system
 - Student enrollment tracking
 - Revenue monitoring
 - Course analytics
+
+![Instructor Dashboard](./client/public/instructor_dashboard.png)
+![Instructor Dashboard](./client/public/instructor_course_creation.png)
 
 ## Major Implementation Challenges & Solutions
 
